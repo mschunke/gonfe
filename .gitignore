@@ -1,0 +1,39 @@
+# Binários e artefatos de build
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/bin/
+/dist/
+
+# Testes e cobertura
+*.test
+*.out
+coverage.*
+
+# Certificados digitais — NUNCA versionar
+*.pfx
+*.p12
+*.pem
+*.key
+*.cer
+*.crt
+!testdata/**/*.pem
+!testdata/**/*.cer
+
+# XMLs gerados durante uso/testes manuais
+/tmp/
+/scratch/
+*.local.xml
+
+# MkDocs
+/site/
+.venv/
+__pycache__/
+
+# Editores
+.vscode/
+.idea/
+*.swp
+.DS_Store
