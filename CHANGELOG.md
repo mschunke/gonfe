@@ -5,6 +5,28 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado
+
+- DACTE do CT-e e DAMDFE do MDF-e em PDF, no mesmo pacote `danfe` e com a mesma
+  paginação automática dos demais: `GerarDACTE`, `DACTE`, `GerarDAMDFE` e
+  `DAMDFE`.
+- No DACTE, o tomador apontado pelo `toma3` é resolvido para a parte
+  correspondente, e o CNPJ, a série e o número dos documentos originários saem
+  da própria chave de acesso.
+- O comando `exemplos/danfe` reconhece o tipo do documento pelo elemento raiz do
+  XML, então o mesmo `-xml` atende a NF-e, CT-e e MDF-e. O modo `-amostra` passa
+  a gerar os quatro documentos auxiliares.
+- Teste que confere que nada é desenhado abaixo da borda inferior da página, em
+  todos os documentos auxiliares e nos casos que enchem a primeira folha. As
+  constantes de espaço reservado que dividem os itens entre as páginas são uma
+  estimativa; sem essa contraprova, uma estimativa otimista faria o rodapé
+  escorregar para fora da folha em silêncio.
+
+### Alterado
+
+- As actions do CI e da documentação foram atualizadas; as versões anteriores
+  ainda pediam Node 20, que o runner agora força para Node 24.
+
 ## [0.3.0] — 2026-08-17
 
 Quatro frentes novas: distribuição de DF-e, documentos auxiliares em PDF, CT-e e

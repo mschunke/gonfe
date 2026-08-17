@@ -276,20 +276,6 @@ func desenharDestinatario(pg *pdf.Pagina, m medidas, n *nfe.NFe, y float64) floa
 	return y + 1.5
 }
 
-func dataOpcional(d *tipos.DataHora) string {
-	if d == nil {
-		return ""
-	}
-	return data(*d)
-}
-
-func horaOpcional(d *tipos.DataHora) string {
-	if d == nil {
-		return ""
-	}
-	return hora(*d)
-}
-
 // desenharDuplicatas imprime a fatura e as duplicatas, quando houver.
 func desenharDuplicatas(pg *pdf.Pagina, m medidas, n *nfe.NFe, y float64) float64 {
 	cobr := n.InfNFe.Cobr

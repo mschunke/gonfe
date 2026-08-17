@@ -223,12 +223,44 @@ func data(d tipos.DataHora) string {
 	return d.Format("02/01/2006")
 }
 
+// dataSimples apresenta uma data de calendário no formato brasileiro.
+func dataSimples(d tipos.Data) string {
+	if d.Vazia() {
+		return ""
+	}
+	return d.Format("02/01/2006")
+}
+
 // hora apresenta apenas a hora.
 func hora(d tipos.DataHora) string {
 	if d.Vazia() {
 		return ""
 	}
 	return d.Format("15:04:05")
+}
+
+// Os campos opcionais do leiaute chegam como ponteiro; estes três evitam a
+// verificação de nulo espalhada pelo desenho.
+
+func dataOpcional(d *tipos.DataHora) string {
+	if d == nil {
+		return ""
+	}
+	return data(*d)
+}
+
+func horaOpcional(d *tipos.DataHora) string {
+	if d == nil {
+		return ""
+	}
+	return hora(*d)
+}
+
+func dataHoraOpcional(d *tipos.DataHora) string {
+	if d == nil {
+		return ""
+	}
+	return dataHora(*d)
 }
 
 // enderecoEmUmaLinha junta logradouro, número e complemento.

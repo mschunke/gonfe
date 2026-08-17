@@ -1,8 +1,14 @@
-# DANFE e cupom
+# Documentos auxiliares em PDF
 
 O pacote [`danfe`](https://pkg.go.dev/github.com/mschunke/gonfe/danfe) gera os
-documentos auxiliares em PDF: o DANFE da NF-e, em A4, e o cupom da NFC-e, em
-bobina.
+quatro documentos auxiliares em PDF.
+
+| Documento auxiliar | Documento fiscal | Função | Formato |
+| --- | --- | --- | --- |
+| DANFE | NF-e, modelo 55 | `Gerar` ou `DANFE` | A4 |
+| Cupom | NFC-e, modelo 65 | `Gerar` ou `Cupom` | bobina |
+| DACTE | CT-e, modelo 57 | `GerarDACTE` ou `DACTE` | A4 |
+| DAMDFE | MDF-e, modelo 58 | `GerarDAMDFE` ou `DAMDFE` | A4 |
 
 ```go
 proc, _ := os.ReadFile("43260...-procNFe.xml")
@@ -14,9 +20,13 @@ if err != nil {
 os.WriteFile("danfe.pdf", documento, 0o644)
 ```
 
-`Gerar` escolhe o formato pelo modelo do documento: modelo 55 vira DANFE,
-modelo 65 vira cupom. Para controlar isso você mesmo, chame `DANFE` ou `Cupom`
-diretamente, passando a nota e o protocolo já interpretados.
+As funções `Gerar*` recebem o XML de distribuição — `nfeProc`, `cteProc` ou
+`mdfeProc` — e cuidam da leitura. `Gerar` ainda escolhe entre DANFE e cupom pelo
+modelo: 55 vira DANFE, 65 vira cupom. Quando o documento já está interpretado em
+memória, chame `DANFE`, `Cupom`, `DACTE` ou `DAMDFE` diretamente, passando o
+documento e o protocolo.
+
+Todos aceitam as mesmas [opções](#opcoes) e produzem paginação automática.
 
 ## Sem dependências
 
@@ -29,11 +39,10 @@ biblioteca de barcode.
 
 !!! warning "Sobre a fidelidade ao manual"
 
-    O leiaute segue a **estrutura de blocos** do Manual de Especificação Técnica
-    do DANFE — canhoto, emitente, destinatário, cálculo do imposto,
-    transportador, itens e dados adicionais. Ele **não** é uma reprodução
-    milimétrica do formulário oficial, e não passou por homologação visual em
-    nenhuma SEFAZ.
+    Os quatro leiautes seguem a **estrutura de blocos** dos manuais de
+    especificação técnica, na ordem que eles descrevem. Nenhum é uma reprodução
+    milimétrica do formulário oficial, e nenhum passou por homologação visual em
+    SEFAZ alguma.
 
     Imprima uma amostra e confira contra as exigências da sua unidade da
     federação antes de usar em produção:
@@ -60,6 +69,63 @@ A paginação é automática: notas longas ocupam quantas folhas forem necessár
 com o cabeçalho repetido e a numeração "FOLHA n de N". Os blocos de
 identificação aparecem só na primeira folha; os dados adicionais, só na última.
 
+## O DACTE
+
+```go
+proc, _ := os.ReadFile("43260...-procCTe.xml")
+
+dacte, err := danfe.GerarDACTE(proc, danfe.Opcoes{})
+```
+
+```mermaid
+flowchart TB
+    A[Canhoto de recebimento] --> B[Emitente · DACTE · Chave e código de barras]
+    B --> C[CFOP · Natureza · Tipo do CT-e]
+    C --> D[Tipo do serviço · Tomador · Início e término da prestação]
+    D --> E[Remetente · Destinatário · Expedidor · Recebedor · Tomador]
+    E --> F[Produto predominante e quantidades]
+    F --> G[Componentes do frete e totais]
+    G --> H[Imposto]
+    H --> I[Documentos originários]
+    I --> J[Modal · Observações · Campos reservados]
+```
+
+Dois detalhes de comportamento que economizam trabalho:
+
+- **O tomador é resolvido sozinho.** Quando o `toma3` aponta para o remetente, o
+  expedidor, o recebedor ou o destinatário, o bloco do tomador é preenchido com
+  os dados daquela parte. Um `toma4` é usado como está.
+- **A chave preenche a tabela.** Nos documentos originários, o CNPJ do emitente,
+  a série e o número saem da própria chave de acesso da NF-e transportada.
+
+## O DAMDFE
+
+```go
+proc, _ := os.ReadFile("43260...-procMDFe.xml")
+
+damdfe, err := danfe.GerarDAMDFE(proc, danfe.Opcoes{})
+```
+
+```mermaid
+flowchart TB
+    A[Emitente · DAMDFE · Chave e código de barras] --> B[Tipo do emitente e do transportador · UF início e fim]
+    B --> C[Municípios de carregamento · Percurso]
+    C --> D[Modal: RNTRC, veículo de tração, reboques, condutores]
+    D --> E[Totalizadores: qNF-e, qCT-e, valor e peso da carga]
+    E --> F[Seguro da carga]
+    F --> G[Documentos por município de descarregamento]
+    G --> H[Observações]
+```
+
+O DAMDFE não tem canhoto — quem assina o recebimento são os documentos que ele
+relaciona, não o manifesto —, então `SemCanhoto` é ignorada. Na relação de
+documentos, o município aparece só na primeira linha de cada grupo; repeti-lo em
+cada chave transformaria a coluna em ruído.
+
+O rodapé lembra que o manifesto precisa ser encerrado. Não é decoração: um MDF-e
+em aberto bloqueia a emissão do seguinte, e o lembrete impresso chega ao
+motorista, que é quem está no pátio.
+
 ## Opções
 
 ```go
@@ -77,6 +143,11 @@ danfe.Opcoes{
 As tarjas saem sozinhas quando o documento pede: uma nota em homologação recebe
 `SEM VALOR FISCAL`, uma denegada recebe `USO DENEGADO` e uma sem protocolo
 recebe `SEM AUTORIZAÇÃO`.
+
+`Orientacao` gira a folha e dá mais largura aos blocos. No DACTE e no DAMDFE a
+estrutura desenhada é a mesma nas duas orientações — não é o leiaute paisagem
+próprio que o manual do DACTE descreve, e o campo `tpImp` do documento não é
+consultado.
 
 ## O QR Code da NFC-e
 
@@ -149,12 +220,14 @@ func baixarDANFE(w http.ResponseWriter, r *http.Request) {
 go run ./exemplos/danfe -amostra
 ```
 
-Gera `amostra-danfe.pdf` e `amostra-cupom.pdf` com uma nota de demonstração, sem
-precisar de certificado nem de XML — o caminho mais rápido para julgar o
+Gera os quatro arquivos — `amostra-danfe.pdf`, `amostra-cupom.pdf`,
+`amostra-dacte.pdf` e `amostra-damdfe.pdf` — com documentos de demonstração, sem
+precisar de certificado nem de XML. É o caminho mais rápido para julgar o
 leiaute.
 
-Para gerar a partir de um XML real:
+Para gerar a partir de um XML real, o mesmo comando serve aos três documentos: o
+tipo é reconhecido pelo elemento raiz.
 
 ```bash
-go run ./exemplos/danfe -xml ./43260...-procNFe.xml
+go run ./exemplos/danfe -xml ./43260...-procCTe.xml
 ```

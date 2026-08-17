@@ -184,6 +184,18 @@ mdfe.NovoCancelamento(...)        // só antes de a viagem começar
 mdfe.NovaInclusaoCondutor(...)    // troca de motorista em viagem longa
 ```
 
+## Os documentos auxiliares
+
+O DACTE e o DAMDFE saem do mesmo pacote que o DANFE, a partir do XML de
+distribuição:
+
+```go
+dacte, err := danfe.GerarDACTE(procCTe, danfe.Opcoes{})
+damdfe, err := danfe.GerarDAMDFE(procMDFe, danfe.Opcoes{})
+```
+
+Os detalhes de cada leiaute estão em [Documentos auxiliares](danfe.md).
+
 ## Estado da implementação
 
 | Item | Situação |
@@ -193,7 +205,7 @@ mdfe.NovaInclusaoCondutor(...)    // troca de motorista em viagem longa
 | CT-e OS, modelo 67 | **Não implementado** — raiz e estrutura próprias |
 | MDF-e modelo 58, leiaute 3.00 | Modelo completo, modal rodoviário completo |
 | MDF-e — eventos | Encerramento, cancelamento e inclusão de condutor |
-| DACTE e DAMDFE em PDF | **Não implementados** |
+| DACTE e DAMDFE em PDF | Completos — veja [Documentos auxiliares](danfe.md) |
 
 !!! warning "Endereços dos serviços"
 
