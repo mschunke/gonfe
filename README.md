@@ -19,12 +19,16 @@ seguindo os padrões da Receita Federal e das Secretarias de Fazenda estaduais.
 | **NFC-e** — Nota Fiscal de Consumidor Eletrônica, modelo 65 | Completo, com QR Code versão 2 |
 | **Eventos** — cancelamento, carta de correção, manifestação | Completo |
 | **Inutilização** de faixas de numeração | Completo |
-| CT-e, MDF-e, distribuição de DF-e | Planejados — veja [Roteiro](#roteiro) |
+| **CT-e** — Conhecimento de Transporte, modelo 57, leiaute 4.00 | Modal rodoviário completo |
+| **MDF-e** — Manifesto de Documentos Fiscais, modelo 58, leiaute 3.00 | Modal rodoviário completo |
+| **DANFE e cupom** da NFC-e em PDF | Completo, sem dependência gráfica |
+| **Distribuição de DF-e** | Completo |
+| CT-e OS (67), DACTE e DAMDFE em PDF | Planejados — veja [Roteiro](#roteiro) |
 
 Em NF-e e NFC-e a biblioteca cobre o ciclo inteiro: montagem do documento,
 cálculo dos totais, validação local, assinatura digital, envio à SEFAZ, espera
-pelo processamento, montagem do arquivo de distribuição e o ciclo de vida
-posterior — correção, cancelamento e inutilização.
+pelo processamento, montagem do arquivo de distribuição, o documento auxiliar em
+PDF e o ciclo de vida posterior — correção, cancelamento e inutilização.
 
 ## Princípios
 
@@ -164,6 +168,10 @@ canc, _ := evento.NovoCancelamento(evento.DadosCancelamento{
 | [`nfe`](https://pkg.go.dev/github.com/mschunke/gonfe/nfe) | Modelo de dados 4.00, cálculo de totais, validação, montagem de lote e de `nfeProc` |
 | [`nfce`](https://pkg.go.dev/github.com/mschunke/gonfe/nfce) | QR Code versão 2 e URLs de consulta da NFC-e |
 | [`evento`](https://pkg.go.dev/github.com/mschunke/gonfe/evento) | Cancelamento, carta de correção, manifestação do destinatário e inutilização |
+| [`cte`](https://pkg.go.dev/github.com/mschunke/gonfe/cte) | Conhecimento de Transporte modelo 57, leiaute 4.00 |
+| [`mdfe`](https://pkg.go.dev/github.com/mschunke/gonfe/mdfe) | Manifesto de Documentos Fiscais modelo 58, com encerramento de viagem |
+| [`danfe`](https://pkg.go.dev/github.com/mschunke/gonfe/danfe) | DANFE em A4 e cupom da NFC-e em bobina, em PDF |
+| [`dfe`](https://pkg.go.dev/github.com/mschunke/gonfe/dfe) | Distribuição de DF-e: documentos de interesse do CNPJ |
 | [`sefaz`](https://pkg.go.dev/github.com/mschunke/gonfe/sefaz) | Endereços por UF, cliente SOAP 1.2 com TLS mútuo e operações |
 | [`xmldsig`](https://pkg.go.dev/github.com/mschunke/gonfe/xmldsig) | Assinatura e verificação no perfil da SEFAZ |
 | [`certificado`](https://pkg.go.dev/github.com/mschunke/gonfe/certificado) | Certificados A1 em PKCS#12, com extração dos OIDs da ICP-Brasil |
@@ -195,10 +203,13 @@ próximos passos, nesta ordem:
 
 - [x] Eventos: cancelamento, carta de correção, manifestação do destinatário e
       inutilização de numeração
-- [ ] Distribuição de DF-e (`NFeDistribuicaoDFe`)
-- [ ] CT-e e CT-e OS, modelos 57 e 67
-- [ ] MDF-e, modelo 58
-- [ ] Geração do DANFE e do DANFE NFC-e em PDF
+- [x] Distribuição de DF-e (`NFeDistribuicaoDFe`)
+- [x] CT-e modelo 57, com o modal rodoviário
+- [x] MDF-e modelo 58, com encerramento de viagem
+- [x] Geração do DANFE e do cupom da NFC-e em PDF
+- [ ] CT-e OS, modelo 67
+- [ ] DACTE e DAMDFE em PDF
+- [ ] Demais modais de CT-e e MDF-e com rodagem em produção
 
 Contribuições são bem-vindas; veja [CONTRIBUTING.md](CONTRIBUTING.md).
 

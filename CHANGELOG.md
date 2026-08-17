@@ -5,6 +5,64 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.3.0] — 2026-08-17
+
+Quatro frentes novas: distribuição de DF-e, documentos auxiliares em PDF, CT-e e
+MDF-e.
+
+### Adicionado
+
+**Distribuição de DF-e**
+
+- Pacote `dfe`: consulta por último NSU, por NSU específico e por chave;
+  descompactação dos `docZip`; interpretação dos quatro schemas que a fila
+  entrega — resumo de NF-e, NF-e completa, resumo de evento e evento completo.
+- `Cliente.DistribuicaoDFe` e `Cliente.ConsumirDFe`. O laço respeita um minuto
+  entre consultas, porque a Receita bloqueia o CNPJ por uma hora quando o
+  consumo é considerado indevido, e devolve o NSU do último documento
+  processado com sucesso para que a retomada não pule nada.
+- O envelope SOAP da distribuição tem um nível a mais que o dos demais
+  serviços: o `nfeDadosMsg` vai dentro de um `nfeDistDFeInteresse`.
+
+**DANFE e cupom em PDF**
+
+- Pacote `danfe`: DANFE da NF-e em A4 com os blocos do manual e paginação
+  automática, e cupom da NFC-e em bobina com altura calculada pelo conteúdo.
+- Escritor PDF próprio, em Go puro, com as fontes base-14 e as métricas reais
+  da Helvetica. Sem biblioteca gráfica, sem CGO, sem dependência nova.
+- Code 128 modo C para o código de barras da chave de acesso.
+- O QR Code não é codificado pela biblioteca: passe a matriz pronta em
+  `Opcoes.QRCode`. Sem ela, o cupom sai com a URL em texto e avisa.
+
+**CT-e**
+
+- Pacote `cte`: modelo 57 no leiaute 4.00, com o modal rodoviário completo e as
+  estruturas dos modais aéreo, aquaviário, ferroviário, dutoviário e
+  multimodal.
+- `sefaz.ClienteCTe` com tabela de endereços própria e a recepção síncrona do
+  4.00, que recebe o documento comprimido em gzip.
+
+**MDF-e**
+
+- Pacote `mdfe`: modelo 58 no leiaute 3.00, com o modal rodoviário completo —
+  veículo de tração, reboques, condutores e dados da ANTT.
+- Documentos agrupados por município de descarregamento, com contagem
+  automática de NF-e, CT-e e MDF-e no grupo de totais.
+- Eventos de encerramento de viagem, cancelamento e inclusão de condutor.
+
+**Outros**
+
+- Exemplos executáveis `exemplos/danfe`, com modo `-amostra` que gera os dois
+  documentos auxiliares sem precisar de certificado nem de XML.
+- Guias de distribuição de DF-e, DANFE e transporte na documentação.
+
+### Notas
+
+- O CT-e OS (modelo 67) tem raiz e estrutura próprias e não está implementado.
+- O DACTE e o DAMDFE em PDF não estão implementados.
+- As tabelas de endereço de CT-e e MDF-e são novas e têm menos verificação em
+  campo que a da NF-e; confira-as antes de produção.
+
 ## [0.2.0] — 2026-08-17
 
 Eventos e inutilização, fechando o ciclo de vida do documento depois da
