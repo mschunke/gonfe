@@ -22,7 +22,7 @@ func TestCarregarPKCS12(t *testing.T) {
 	const senha = "senha-do-teste"
 	pfx, original, err := certtest.GerarPKCS12(certtest.Opcoes{
 		RazaoSocial: "COMERCIO EXEMPLO LTDA",
-		CNPJ:        "12345678000199",
+		CNPJ:        "12345678000195",
 	}, senha)
 	if err != nil {
 		t.Fatalf("GerarPKCS12: %v", err)
@@ -35,7 +35,7 @@ func TestCarregarPKCS12(t *testing.T) {
 	if c.Titular() != original.Titular() {
 		t.Errorf("titular = %q, queria %q", c.Titular(), original.Titular())
 	}
-	if c.CNPJ() != "12345678000199" {
+	if c.CNPJ() != "12345678000195" {
 		t.Errorf("CNPJ = %q", c.CNPJ())
 	}
 	if c.RazaoSocial() != "COMERCIO EXEMPLO LTDA" {
@@ -113,10 +113,10 @@ func TestCPFDoSubjectAltName(t *testing.T) {
 func TestDocumentoPeloNomeComumQuandoNaoHaSAN(t *testing.T) {
 	pj := certtest.MustGerar(certtest.Opcoes{
 		RazaoSocial:       "SEM SAN LTDA",
-		CNPJ:              "12345678000199",
+		CNPJ:              "12345678000195",
 		SemSubjectAltName: true,
 	})
-	if got := pj.CNPJ(); got != "12345678000199" {
+	if got := pj.CNPJ(); got != "12345678000195" {
 		t.Errorf("CNPJ pelo CN = %q", got)
 	}
 	if got := pj.RazaoSocial(); got != "SEM SAN LTDA" {
@@ -252,10 +252,10 @@ func TestDERBase64(t *testing.T) {
 func TestDescrever(t *testing.T) {
 	c := certtest.MustGerar(certtest.Opcoes{
 		RazaoSocial: "PADARIA DO ZE LTDA",
-		CNPJ:        "12345678000199",
+		CNPJ:        "12345678000195",
 	})
 	d := c.Descrever()
-	for _, trecho := range []string{"PADARIA DO ZE LTDA", "CNPJ", "12345678000199", certtest.NomeAC} {
+	for _, trecho := range []string{"PADARIA DO ZE LTDA", "CNPJ", "12345678000195", certtest.NomeAC} {
 		if !strings.Contains(d, trecho) {
 			t.Errorf("Descrever() = %q, faltou %q", d, trecho)
 		}

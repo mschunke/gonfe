@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testes:
+    name: Testes (${{ matrix.os }}, Go ${{ matrix.go }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        go: ['1.23', '1.24', 'stable']
+        exclude:
+          # Basta um sistema operacional para conferir as versões antigas.
+          - os: windows-latest
+            go: '1.23'
+          - os: windows-latest
+            go: '1.24'
+          - os: macos-latest
+            go: '1.23'
+          - os: macos-latest
+            go: '1.24'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+          check-latest: true
+
+      - name: Baixar dependências
+        run: go mod download
+
+      - name: Conferir go.mod e go.sum
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Testes
+        run: go test -count=1 ./...
+
+  corrida:
+    name: Detector de corrida
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      # O detector de corrida exige CGO, que só está garantido no runner Linux.
+      - name: Testes com -race
+        run: go test -race -count=1 ./...
+        env:
+          CGO_ENABLED: '1'
+
+  formatacao:
+    name: Formatação
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: gofmt
+        run: |
+          arquivos=$(gofmt -l .)
+          if [ -n "$arquivos" ]; then
+            echo "Estes arquivos não estão formatados:"
+            echo "$arquivos"
+            gofmt -d .
+            exit 1
+          fi
+
+  cobertura:
+    name: Cobertura
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Medir cobertura
+        run: go test -coverprofile=cobertura.out -covermode=atomic ./...
+
+      - name: Resumo por pacote
+        run: |
+          go tool cover -func=cobertura.out | tee resumo.txt
+          total=$(grep -E '^total:' resumo.txt | awk '{print $3}')
+          echo "### Cobertura total: $total" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat resumo.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cobertura
+          path: cobertura.out
+
+  analise:
+    name: Análise estática
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: staticcheck
+        uses: dominikh/staticcheck-action@v1
+        with:
+          version: latest
+          install-go: false
+
+      - name: govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...

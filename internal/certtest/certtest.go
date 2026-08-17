@@ -50,7 +50,7 @@ func (o *Opcoes) aplicarPadroes() {
 		o.RazaoSocial = "EMPRESA DE TESTE LTDA"
 	}
 	if o.CNPJ == "" && o.CPF == "" {
-		o.CNPJ = "12345678000199"
+		o.CNPJ = "12345678000195"
 	}
 	if o.ValidoDe.IsZero() {
 		o.ValidoDe = time.Now().Add(-24 * time.Hour)

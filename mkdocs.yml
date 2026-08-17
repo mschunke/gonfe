@@ -1,0 +1,96 @@
+site_name: GoNFE
+site_description: Biblioteca Go para emissão de documentos fiscais eletrônicos brasileiros
+site_author: mschunke
+site_url: https://mschunke.github.io/gonfe/
+repo_url: https://github.com/mschunke/gonfe
+repo_name: mschunke/gonfe
+edit_uri: edit/main/docs/
+copyright: Distribuído sob a licença MIT
+
+theme:
+  name: material
+  language: pt-BR
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - search.highlight
+    - search.suggest
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Seguir o sistema
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-7
+        name: Tema claro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/brightness-4
+        name: Tema escuro
+
+nav:
+  - Início: index.md
+  - Começando:
+      - Instalação: instalacao.md
+      - Primeira nota: primeira-nota.md
+      - Certificado digital: certificado.md
+  - Guias:
+      - Emissão de NF-e: nfe.md
+      - Emissão de NFC-e: nfce.md
+      - Assinatura digital: assinatura.md
+      - Serviços da SEFAZ: sefaz.md
+      - Valores decimais: decimais.md
+      - Validação: validacao.md
+  - Referência:
+      - Pacotes: pacotes.md
+      - Perguntas frequentes: faq.md
+  - Contribuindo: contribuindo.md
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mschunke/gonfe
+      name: Código no GitHub
+    - icon: fontawesome/solid/book
+      link: https://pkg.go.dev/github.com/mschunke/gonfe
+      name: Referência da API no pkg.go.dev

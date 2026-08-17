@@ -1,0 +1,13 @@
+# Normaliza as quebras de linha do repositório para LF, independentemente do
+# sistema operacional de quem contribui.
+* text=auto eol=lf
+
+*.go   text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.xml  text eol=lf
+
+*.pfx binary
+*.p12 binary
+*.png binary

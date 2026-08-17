@@ -11,6 +11,8 @@
 *.test
 *.out
 coverage.*
+cobertura
+cobertura.*
 
 # Certificados digitais — NUNCA versionar
 *.pfx

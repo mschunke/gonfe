@@ -408,6 +408,12 @@ func (d *Decimal) UnmarshalJSON(dados []byte) error {
 	return d.UnmarshalText([]byte(s))
 }
 
+// Ptr devolve um ponteiro para v. Serve para preencher os campos opcionais dos
+// documentos fiscais, que são ponteiros para distinguir "ausente" de "zero":
+//
+//	prod.VDesc = tipos.Ptr(tipos.D("5.00"))
+func Ptr[T any](v T) *T { return &v }
+
 // SomarTodos devolve a soma de todos os valores, com a maior escala presente.
 // A soma de nenhum valor é o Decimal zero.
 func SomarTodos(valores ...Decimal) Decimal {

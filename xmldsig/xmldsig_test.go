@@ -13,13 +13,13 @@ import (
 	"github.com/mschunke/gonfe/xmldsig"
 )
 
-const idExemplo = "NFe43260312345678000199550010000012341876543216"
+const idExemplo = "NFe43260312345678000195550010000012341876543211"
 
 func nfeExemplo() []byte {
 	return []byte(`<NFe xmlns="http://www.portalfiscal.inf.br/nfe">` +
 		`<infNFe Id="` + idExemplo + `" versao="4.00">` +
 		`<ide><cUF>43</cUF><nNF>1234</nNF></ide>` +
-		`<emit><CNPJ>12345678000199</CNPJ><xNome>Empresa &amp; Cia</xNome></emit>` +
+		`<emit><CNPJ>12345678000195</CNPJ><xNome>Empresa &amp; Cia</xNome></emit>` +
 		`</infNFe></NFe>`)
 }
 
@@ -192,7 +192,7 @@ func TestAssinaturaDeOutroCertificadoNaoConfere(t *testing.T) {
 func TestCertificadoEmbutido(t *testing.T) {
 	cert := certtest.MustGerar(certtest.Opcoes{
 		RazaoSocial: "SIGNATARIO LTDA",
-		CNPJ:        "12345678000199",
+		CNPJ:        "12345678000195",
 	})
 	assinado, err := xmldsig.Assinar(nfeExemplo(), "infNFe", cert)
 	if err != nil {
@@ -210,7 +210,7 @@ func TestCertificadoEmbutido(t *testing.T) {
 	if err != nil {
 		t.Fatalf("De: %v", err)
 	}
-	if envolvido.CNPJ() != "12345678000199" {
+	if envolvido.CNPJ() != "12345678000195" {
 		t.Errorf("CNPJ do certificado extraído = %q", envolvido.CNPJ())
 	}
 }
@@ -328,7 +328,7 @@ func TestErrosDeUso(t *testing.T) {
 func TestAssinarEvento(t *testing.T) {
 	cert := certtest.MustGerar(certtest.Opcoes{})
 	evento := []byte(`<evento xmlns="http://www.portalfiscal.inf.br/nfe" versao="1.00">` +
-		`<infEvento Id="ID1101114326031234567800019955001000001234187654321601">` +
+		`<infEvento Id="ID1101114326031234567800019555001000001234187654321101">` +
 		`<cOrgao>43</cOrgao><tpAmb>2</tpAmb>` +
 		`</infEvento></evento>`)
 
