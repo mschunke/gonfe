@@ -59,7 +59,7 @@
 package gonfe
 
 // Versao é a versão desta biblioteca.
-const Versao = "0.4.0"
+const Versao = "0.5.0"
 
 // VersaoLeiaute é a versão do leiaute dos documentos fiscais implementada.
 const VersaoLeiaute = "4.00"

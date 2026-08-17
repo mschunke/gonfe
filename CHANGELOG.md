@@ -5,6 +5,11 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.5.0] — 2026-08-17
+
+Fecha os ciclos de vida. Todo documento que a biblioteca emite agora pode
+também ser corrigido, cancelado e impresso.
+
 ### Adicionado
 
 - Eventos do CT-e, que faltavam: um conhecimento era autorizado mas nunca podia
@@ -25,6 +30,14 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
 - Teste fixando que os eventos do pacote `cte` servem ao modelo 67: o elemento
   raiz é `eventoCTe` nos dois, então não há — nem deve haver — um pacote de
   eventos do CT-e OS.
+- O modo `-amostra` do `exemplos/danfe` passa a gerar os cinco documentos
+  auxiliares.
+
+### Notas
+
+- Os documentos auxiliares do transporte seguem a estrutura de blocos dos
+  manuais, não uma reprodução milimétrica do formulário, e nenhum passou por
+  homologação visual em SEFAZ. Imprima uma amostra e confira.
 
 ## [0.4.0] — 2026-08-17
 
@@ -257,7 +270,8 @@ Primeira versão. Cobre o ciclo completo de emissão de NF-e e NFC-e no leiaute
 - Eventos, distribuição de DF-e, CT-e, MDF-e e DANFE ainda não estão
   implementados; veja o roteiro no README.
 
-[Não lançado]: https://github.com/mschunke/gonfe/compare/v0.4.0...HEAD
+[Não lançado]: https://github.com/mschunke/gonfe/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/mschunke/gonfe/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/mschunke/gonfe/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mschunke/gonfe/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/mschunke/gonfe/compare/v0.1.0...v0.2.0
