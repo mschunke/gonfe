@@ -397,6 +397,63 @@ func (c *ClienteCTe) ConsultarCTe(ctx context.Context, chaveAcesso string) (*Ret
 	return &resposta, nil
 }
 
+// RetEventoCTe é a resposta do registro de um evento.
+type RetEventoCTe struct {
+	XMLName   xml.Name        `xml:"retEventoCTe"`
+	Versao    string          `xml:"versao,attr"`
+	InfEvento InfRetEventoCTe `xml:"infEvento"`
+}
+
+// InfRetEventoCTe são os dados da resposta de um evento.
+type InfRetEventoCTe struct {
+	Id       string         `xml:"Id,attr,omitempty"`
+	TpAmb    cte.Ambiente   `xml:"tpAmb"`
+	VerAplic string         `xml:"verAplic"`
+	COrgao   int            `xml:"cOrgao"`
+	CStat    int            `xml:"cStat"`
+	XMotivo  string         `xml:"xMotivo"`
+	ChCTe    string         `xml:"chCTe,omitempty"`
+	TpEvento string         `xml:"tpEvento,omitempty"`
+	NSeqEven int            `xml:"nSeqEvento,omitempty"`
+	DhRegEve tipos.DataHora `xml:"dhRegEvento,omitempty"`
+	NProt    string         `xml:"nProt,omitempty"`
+}
+
+// Registrado informa se o evento foi aceito e vinculado ao conhecimento.
+func (r *RetEventoCTe) Registrado() bool {
+	if r == nil {
+		return false
+	}
+	switch r.InfEvento.CStat {
+	case 134, 135, 136:
+		return true
+	}
+	return false
+}
+
+// EnviarEvento registra um evento do CT-e: cancelamento, carta de correção ou
+// prestação de serviço em desacordo.
+//
+// Como no MDF-e, o CT-e recebe um evento por vez — não há lote.
+func (c *ClienteCTe) EnviarEvento(ctx context.Context, eventoAssinado []byte) (*RetEventoCTe, error) {
+	if !bytes.Contains(eventoAssinado, []byte("<eventoCTe")) {
+		return nil, errors.New("sefaz: o conteúdo enviado não é um evento de CT-e")
+	}
+
+	var resposta RetEventoCTe
+	if err := c.chamar(ctx, ServicoCTeEvento, eventoAssinado, &resposta); err != nil {
+		return nil, err
+	}
+	if !resposta.Registrado() {
+		return &resposta, &ErroSefaz{
+			Servico: Servico(ServicoCTeEvento),
+			CStat:   resposta.InfEvento.CStat,
+			XMotivo: resposta.InfEvento.XMotivo,
+		}
+	}
+	return &resposta, nil
+}
+
 // Chamar envia uma mensagem já montada a um serviço de CT-e e devolve a
 // resposta crua. Serve para operações que a biblioteca ainda não cobre.
 func (c *ClienteCTe) Chamar(ctx context.Context, servico ServicoCTe, mensagem []byte) ([]byte, error) {

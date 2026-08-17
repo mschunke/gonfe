@@ -19,7 +19,7 @@ seguindo os padrões da Receita Federal e das Secretarias de Fazenda estaduais.
 | **NFC-e** — Nota Fiscal de Consumidor Eletrônica, modelo 65 | Completo, com QR Code versão 2 |
 | **Eventos** — cancelamento, carta de correção, manifestação | Completo |
 | **Inutilização** de faixas de numeração | Completo |
-| **CT-e** — Conhecimento de Transporte, modelo 57, leiaute 4.00 | Modal rodoviário completo |
+| **CT-e** — Conhecimento de Transporte, modelo 57, leiaute 4.00 | Modal rodoviário completo, com eventos |
 | **CT-e OS** — Outros Serviços, modelo 67, leiaute 4.00 | Completo, sem rodagem em campo |
 | **MDF-e** — Manifesto de Documentos Fiscais, modelo 58, leiaute 3.00 | Modal rodoviário completo |
 | **DANFE, cupom, DACTE e DAMDFE** em PDF | Completos, sem dependência gráfica |

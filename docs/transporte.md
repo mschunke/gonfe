@@ -8,7 +8,7 @@ chave de acesso, assinatura, cliente SOAP — e diferem no que descrevem.
 | O que documenta | Uma prestação de transporte de carga | Uma prestação que não move carga | O conjunto de documentos dentro de um veículo |
 | Quem emite | A transportadora | A transportadora | Quem transporta, próprio ou de terceiros |
 | Conteúdo central | Carga, componentes do frete, ICMS | Serviço em texto livre, veículo, ICMS | Documentos por município de descarregamento, veículo, condutores |
-| Ciclo de vida | Autorizar → cancelar | Autorizar → cancelar | Autorizar → **encerrar** |
+| Ciclo de vida | Autorizar → corrigir → cancelar | Autorizar → corrigir → cancelar | Autorizar → **encerrar** |
 | Leiaute | 4.00 | 4.00 | 3.00 |
 | Pacote | `cte` | `cteos` | `mdfe` |
 
@@ -107,6 +107,49 @@ if resposta.ProtCTe.Autorizado() {
 
 A compressão é feita por `cte.MontarEnvioSincrono` e não altera os bytes
 assinados — a assinatura continua conferindo do outro lado.
+
+### Eventos
+
+Três eventos, transmitidos um a um — o CT-e não tem lote:
+
+```go
+canc, _ := cte.NovoCancelamento(cte.DadosCancelamento{
+    Chave: c.Chave(), CNPJ: cnpj, Ambiente: cte.Producao, UF: uf.RS,
+    Protocolo:     prot.InfProt.NProt,
+    Justificativa: "Conhecimento emitido com o tomador errado",
+})
+assinado, _ := canc.AssinarCom(cert)
+ret, _ := cliente.EnviarEvento(ctx, assinado)
+```
+
+O cancelamento só é aceito antes do início da prestação e dentro do prazo da UF,
+em geral 168 horas. Passado isso, o caminho é o CT-e de anulação seguido de um
+substituto.
+
+A carta de correção do CT-e é **mais estrita que a da NF-e**: em vez de um texto
+livre, ela exige que cada correção aponte o grupo, o campo e o novo valor.
+
+```go
+cc, _ := cte.NovaCartaCorrecao(cte.DadosCartaCorrecao{
+    Chave: c.Chave(), CNPJ: cnpj, Ambiente: cte.Producao, UF: uf.RS,
+    Correcoes: []cte.Correcao{
+        {GrupoAlterado: "ide", CampoAlterado: "xMunFim", ValorAlterado: "BENTO GONCALVES"},
+    },
+})
+```
+
+O campo `xCondUso`, cujo texto a SEFAZ compara caractere a caractere, é
+preenchido sozinho a partir de `cte.CondicaoDeUsoCCe`.
+
+O terceiro evento é do outro lado do balcão: quem registra a **prestação em
+desacordo** é o tomador, não o emitente.
+
+```go
+des, _ := cte.NovoDesacordo(cte.DadosDesacordo{
+    Chave: chaveDoCTe, CNPJ: cnpjDoTomador, Ambiente: cte.Producao, UF: uf.RS,
+    Observacao: "Carga entregue com avaria em tres volumes",
+})
+```
 
 ## CT-e OS
 
@@ -327,6 +370,7 @@ Os detalhes de cada leiaute estão em [Documentos auxiliares](danfe.md).
 | Item | Situação |
 | --- | --- |
 | CT-e modelo 57, leiaute 4.00 | Modelo completo, modal rodoviário completo |
+| CT-e — eventos | Cancelamento, carta de correção e prestação em desacordo |
 | CT-e — demais modais | Estruturas presentes, sem rodagem |
 | CT-e OS, modelo 67 | Modelo completo, sem rodagem em campo |
 | MDF-e modelo 58, leiaute 3.00 | Modelo completo, modal rodoviário completo |

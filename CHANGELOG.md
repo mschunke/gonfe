@@ -5,6 +5,18 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+### Adicionado
+
+- Eventos do CT-e, que faltavam: um conhecimento era autorizado mas nunca podia
+  ser cancelado. `cte.NovoCancelamento` (110111), `cte.NovaCartaCorrecao`
+  (110110) e `cte.NovoDesacordo` (610110), com `sefaz.ClienteCTe.EnviarEvento`.
+- A carta de correção do CT-e é mais estrita que a da NF-e: em vez de texto
+  livre, cada correção aponta grupo, campo e valor. O `xCondUso`, que a SEFAZ
+  compara caractere a caractere, é preenchido a partir de
+  `cte.CondicaoDeUsoCCe`.
+- O registro de prestação em desacordo é do **tomador**, não do emitente — é a
+  via que o contratante tem para dizer que o serviço divergiu do contratado.
+
 ## [0.4.0] — 2026-08-17
 
 Fecha o transporte: o CT-e OS, os documentos auxiliares que faltavam e a ponta
