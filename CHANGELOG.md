@@ -5,6 +5,11 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.4.0] — 2026-08-17
+
+Fecha o transporte: o CT-e OS, os documentos auxiliares que faltavam e a ponta
+que transmite o MDF-e.
+
 ### Adicionado
 
 - Pacote `cteos`: CT-e Outros Serviços, modelo 67, no leiaute 4.00 — transporte
@@ -48,6 +53,16 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
 
 - As actions do CI e da documentação foram atualizadas; as versões anteriores
   ainda pediam Node 20, que o runner agora força para Node 24.
+- A página de pacotes da documentação estava parada na 0.1.0: o mapa não
+  conhecia `cte`, `mdfe`, `danfe`, `dfe` nem `evento`. Foi refeito.
+
+### Notas
+
+- O `cteos` é novo e tem menos rodagem em campo que o `cte`. Homologue antes de
+  emitir com valor fiscal.
+- O DACTE OS em PDF não está implementado.
+- As tabelas de endereço de CT-e e MDF-e continuam sendo reproduções do que os
+  portais publicam; confira antes de produção e sobreponha o que divergir.
 
 ## [0.3.0] — 2026-08-17
 
@@ -221,7 +236,8 @@ Primeira versão. Cobre o ciclo completo de emissão de NF-e e NFC-e no leiaute
 - Eventos, distribuição de DF-e, CT-e, MDF-e e DANFE ainda não estão
   implementados; veja o roteiro no README.
 
-[Não lançado]: https://github.com/mschunke/gonfe/compare/v0.3.0...HEAD
+[Não lançado]: https://github.com/mschunke/gonfe/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/mschunke/gonfe/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mschunke/gonfe/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/mschunke/gonfe/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mschunke/gonfe/releases/tag/v0.1.0
