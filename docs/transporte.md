@@ -1,15 +1,16 @@
 # CT-e e MDF-e
 
-Os dois documentos do transporte compartilham quase toda a infraestrutura da
-NF-e — chave de acesso, assinatura, cliente SOAP — e diferem no que descrevem.
+Os documentos do transporte compartilham quase toda a infraestrutura da NF-e —
+chave de acesso, assinatura, cliente SOAP — e diferem no que descrevem.
 
-| | CT-e (57) | MDF-e (58) |
-| --- | --- | --- |
-| O que documenta | Uma prestação de serviço de transporte | O conjunto de documentos dentro de um veículo |
-| Quem emite | A transportadora | Quem transporta, próprio ou de terceiros |
-| Conteúdo central | Carga, componentes do frete, ICMS | Documentos por município de descarregamento, veículo, condutores |
-| Ciclo de vida | Autorizar → cancelar | Autorizar → **encerrar** |
-| Leiaute | 4.00 | 3.00 |
+| | CT-e (57) | CT-e OS (67) | MDF-e (58) |
+| --- | --- | --- | --- |
+| O que documenta | Uma prestação de transporte de carga | Uma prestação que não move carga | O conjunto de documentos dentro de um veículo |
+| Quem emite | A transportadora | A transportadora | Quem transporta, próprio ou de terceiros |
+| Conteúdo central | Carga, componentes do frete, ICMS | Serviço em texto livre, veículo, ICMS | Documentos por município de descarregamento, veículo, condutores |
+| Ciclo de vida | Autorizar → cancelar | Autorizar → cancelar | Autorizar → **encerrar** |
+| Leiaute | 4.00 | 4.00 | 3.00 |
+| Pacote | `cte` | `cteos` | `mdfe` |
 
 !!! warning "O MDF-e precisa ser encerrado"
 
@@ -107,6 +108,87 @@ if resposta.ProtCTe.Autorizado() {
 A compressão é feita por `cte.MontarEnvioSincrono` e não altera os bytes
 assinados — a assinatura continua conferindo do outro lado.
 
+## CT-e OS
+
+O CT-e OS, modelo 67, documenta a prestação que **não move carga**: transporte
+de pessoas, transporte de valores e excesso de bagagem. Ele tem raiz própria,
+`<CTeOS>`, e não é uma variação do 57 — onde o CT-e descreve remetente,
+destinatário e carga, o CT-e OS descreve um tomador e um serviço em texto livre.
+
+```go
+c := cteos.Novo(cteos.ServicoTransportePessoas)
+
+ide := &c.InfCte.Ide
+ide.CFOP = "5357"
+ide.NatOp = "PRESTACAO DE SERVICO DE TRANSPORTE DE PESSOAS"
+ide.Serie, ide.NCT = 1, 432
+ide.DhEmi = tipos.AgoraEm(uf.RS.Fuso())
+ide.TpAmb = cte.Homologacao
+ide.CMunEnv, ide.XMunEnv, ide.UFEnv = 4314902, "PORTO ALEGRE", "RS"
+ide.CMunIni, ide.XMunIni, ide.UFIni = 4314902, "PORTO ALEGRE", "RS"
+ide.CMunFim, ide.XMunFim, ide.UFFim = 4305108, "CAXIAS DO SUL", "RS"
+ide.IndIEToma = cte.ContribuinteICMS
+
+c.InfCte.Emit = cte.Emit{ /* a transportadora */ }
+
+// Um tomador só, declarado uma vez. Não há toma3 nem toma4.
+c.InfCte.Toma = &cteos.Toma{
+    CNPJ: "11222333000181", IE: "1234567890",
+    XNome: "EMPRESA CONTRATANTE SA",
+}
+
+c.InfCte.VPrest.Comp = []cte.Componente{
+    {XNome: "SERVICO DE FRETAMENTO", VComp: tipos.D("2400.00")},
+    {XNome: "PEDAGIO", VComp: tipos.D("100.00")},
+}
+
+// O serviço é descrito em texto, no lugar da carga do modelo 57.
+c.InfCte.InfCTeNorm.InfServico = cteos.InfServico{
+    XDescServ: "FRETAMENTO EVENTUAL DE ONIBUS PARA EXCURSAO",
+    InfQ:      &cteos.InfQ{QCarga: tipos.D("42")}, // passageiros
+}
+
+// O veículo volta ao documento: no transporte de pessoas não há MDF-e.
+c.InfCte.InfCTeNorm.InfModal.RodoOS = &cteos.RodoOS{
+    TAF:  "1234567890",
+    Veic: &cteos.Veiculo{Placa: "ABC1D23", RENAVAM: "12345678901", UF: "RS"},
+    InfFretamento: &cteos.InfFretamento{
+        TpFretamento: cteos.FretamentoEventual,
+        DhViagem:     tipos.Ptr(tipos.DH("2026-03-06T05:00:00-03:00")),
+    },
+}
+
+assinado, err := c.AssinarCom(cert)
+```
+
+### O que vem do pacote `cte`
+
+Tudo o que os dois modelos têm em comum não é redefinido: os grupos de ICMS, o
+endereço, o emitente, o valor da prestação, as informações complementares, a
+cobrança, o responsável técnico e o protocolo. Por isso o código acima importa
+os dois pacotes.
+
+### Transmissão
+
+O mesmo serviço atende aos dois modelos, e `sefaz.ClienteCTe` reconhece qual é
+pelo elemento raiz do documento assinado:
+
+```go
+resposta, err := cliente.Autorizar(ctx, assinado)
+if resposta.ProtCTe.Autorizado() {
+    proc, _ := cteos.MontarCTeOSProc(assinado, resposta.ProtCTe)
+}
+```
+
+!!! warning "Este pacote é novo"
+
+    O conjunto de campos segue o leiaute 4.00, mas o `cteos` tem menos rodagem
+    em campo que o `cte`. Homologue com prestações reais do seu cenário antes de
+    emitir com valor fiscal. Um grupo fora de ordem é rejeitado na validação de
+    esquema, com a mensagem apontando o elemento — falha clara, não silenciosa.
+
+    O DACTE OS em PDF **não** está implementado.
+
 ## MDF-e
 
 ```go
@@ -202,10 +284,19 @@ Os detalhes de cada leiaute estão em [Documentos auxiliares](danfe.md).
 | --- | --- |
 | CT-e modelo 57, leiaute 4.00 | Modelo completo, modal rodoviário completo |
 | CT-e — demais modais | Estruturas presentes, sem rodagem |
-| CT-e OS, modelo 67 | **Não implementado** — raiz e estrutura próprias |
+| CT-e OS, modelo 67 | Modelo completo, sem rodagem em campo |
 | MDF-e modelo 58, leiaute 3.00 | Modelo completo, modal rodoviário completo |
 | MDF-e — eventos | Encerramento, cancelamento e inclusão de condutor |
 | DACTE e DAMDFE em PDF | Completos — veja [Documentos auxiliares](danfe.md) |
+| DACTE OS em PDF | **Não implementado** |
+| Cliente SEFAZ do CT-e e do CT-e OS | Status, autorização e consulta |
+| Cliente SEFAZ do MDF-e | **Não implementado** — veja abaixo |
+
+!!! warning "O MDF-e ainda não tem cliente"
+
+    O pacote `mdfe` monta, valida e assina o manifesto e seus eventos, mas o
+    `sefaz` ainda não tem o cliente que os transmite. Até lá, use o XML assinado
+    com o seu próprio transporte SOAP.
 
 !!! warning "Endereços dos serviços"
 

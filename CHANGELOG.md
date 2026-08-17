@@ -7,6 +7,16 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
 
 ### Adicionado
 
+- Pacote `cteos`: CT-e Outros Serviços, modelo 67, no leiaute 4.00 — transporte
+  de pessoas, transporte de valores e excesso de bagagem. Raiz `<CTeOS>`, um
+  único grupo `toma` no lugar do par toma3/toma4, serviço descrito em texto no
+  lugar da carga e o modal `rodoOS`, que traz o veículo de volta ao documento
+  porque nessas prestações não há MDF-e para carregá-lo.
+- Tudo o que os dois modelos de CT-e têm em comum vem do pacote `cte` e não é
+  redefinido: grupos de ICMS, endereço, emitente, valor da prestação,
+  informações complementares, cobrança, responsável técnico e protocolo.
+- `sefaz.ClienteCTe.Autorizar` reconhece o modelo pelo elemento raiz e atende
+  aos dois pelo mesmo serviço de recepção síncrona.
 - DACTE do CT-e e DAMDFE do MDF-e em PDF, no mesmo pacote `danfe` e com a mesma
   paginação automática dos demais: `GerarDACTE`, `DACTE`, `GerarDAMDFE` e
   `DAMDFE`.

@@ -20,10 +20,11 @@ seguindo os padrões da Receita Federal e das Secretarias de Fazenda estaduais.
 | **Eventos** — cancelamento, carta de correção, manifestação | Completo |
 | **Inutilização** de faixas de numeração | Completo |
 | **CT-e** — Conhecimento de Transporte, modelo 57, leiaute 4.00 | Modal rodoviário completo |
+| **CT-e OS** — Outros Serviços, modelo 67, leiaute 4.00 | Completo, sem rodagem em campo |
 | **MDF-e** — Manifesto de Documentos Fiscais, modelo 58, leiaute 3.00 | Modal rodoviário completo |
 | **DANFE, cupom, DACTE e DAMDFE** em PDF | Completos, sem dependência gráfica |
 | **Distribuição de DF-e** | Completo |
-| CT-e OS (67) | Planejado — veja [Roteiro](#roteiro) |
+| DACTE OS em PDF | Planejado — veja [Roteiro](#roteiro) |
 
 Em NF-e e NFC-e a biblioteca cobre o ciclo inteiro: montagem do documento,
 cálculo dos totais, validação local, assinatura digital, envio à SEFAZ, espera
@@ -169,6 +170,7 @@ canc, _ := evento.NovoCancelamento(evento.DadosCancelamento{
 | [`nfce`](https://pkg.go.dev/github.com/mschunke/gonfe/nfce) | QR Code versão 2 e URLs de consulta da NFC-e |
 | [`evento`](https://pkg.go.dev/github.com/mschunke/gonfe/evento) | Cancelamento, carta de correção, manifestação do destinatário e inutilização |
 | [`cte`](https://pkg.go.dev/github.com/mschunke/gonfe/cte) | Conhecimento de Transporte modelo 57, leiaute 4.00 |
+| [`cteos`](https://pkg.go.dev/github.com/mschunke/gonfe/cteos) | CT-e Outros Serviços modelo 67: pessoas, valores e excesso de bagagem |
 | [`mdfe`](https://pkg.go.dev/github.com/mschunke/gonfe/mdfe) | Manifesto de Documentos Fiscais modelo 58, com encerramento de viagem |
 | [`danfe`](https://pkg.go.dev/github.com/mschunke/gonfe/danfe) | DANFE, cupom da NFC-e, DACTE e DAMDFE em PDF |
 | [`dfe`](https://pkg.go.dev/github.com/mschunke/gonfe/dfe) | Distribuição de DF-e: documentos de interesse do CNPJ |
@@ -208,7 +210,10 @@ próximos passos, nesta ordem:
 - [x] MDF-e modelo 58, com encerramento de viagem
 - [x] Geração do DANFE e do cupom da NFC-e em PDF
 - [x] DACTE e DAMDFE em PDF
-- [ ] CT-e OS, modelo 67
+- [x] CT-e OS, modelo 67
+- [ ] Cliente SEFAZ do MDF-e: hoje o manifesto é montado e assinado, mas não
+      transmitido
+- [ ] DACTE OS em PDF
 - [ ] Demais modais de CT-e e MDF-e com rodagem em produção
 
 Contribuições são bem-vindas; veja [CONTRIBUTING.md](CONTRIBUTING.md).

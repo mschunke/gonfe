@@ -10,8 +10,10 @@
 //     leiaute 4.00, cálculo de totais, validação e montagem de lote.
 //   - [github.com/mschunke/gonfe/nfce] — QR Code e URLs de consulta da NFC-e.
 //   - [github.com/mschunke/gonfe/cte] — Conhecimento de Transporte modelo 57.
+//   - [github.com/mschunke/gonfe/cteos] — CT-e Outros Serviços, modelo 67.
 //   - [github.com/mschunke/gonfe/mdfe] — Manifesto de Documentos Fiscais 58.
-//   - [github.com/mschunke/gonfe/danfe] — DANFE e cupom da NFC-e em PDF.
+//   - [github.com/mschunke/gonfe/danfe] — DANFE, cupom da NFC-e, DACTE e
+//     DAMDFE em PDF.
 //   - [github.com/mschunke/gonfe/dfe] — distribuição de DF-e.
 //   - [github.com/mschunke/gonfe/evento] — cancelamento, carta de correção,
 //     manifestação do destinatário e inutilização de numeração.
@@ -57,7 +59,7 @@
 package gonfe
 
 // Versao é a versão desta biblioteca.
-const Versao = "0.3.0"
+const Versao = "0.4.0"
 
 // VersaoLeiaute é a versão do leiaute dos documentos fiscais implementada.
 const VersaoLeiaute = "4.00"

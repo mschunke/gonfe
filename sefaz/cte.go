@@ -13,6 +13,7 @@ import (
 	"github.com/mschunke/gonfe/certificado"
 	"github.com/mschunke/gonfe/chave"
 	"github.com/mschunke/gonfe/cte"
+	"github.com/mschunke/gonfe/cteos"
 	"github.com/mschunke/gonfe/tipos"
 	"github.com/mschunke/gonfe/uf"
 )
@@ -345,13 +346,25 @@ func (c *ClienteCTe) StatusServico(ctx context.Context) (*RetConsStatServCTe, er
 // Autorizar transmite um conhecimento assinado para autorização.
 //
 // A recepção do leiaute 4.00 é síncrona e recebe um documento por vez,
-// comprimido em gzip e codificado em base64 — [cte.MontarEnvioSincrono] faz
-// essa preparação. A resposta já traz o protocolo.
+// comprimido em gzip e codificado em base64 — [cte.MontarEnvioSincrono] e
+// [cteos.MontarEnvioSincrono] fazem essa preparação. A resposta já traz o
+// protocolo.
+//
+// O mesmo serviço atende aos dois modelos: o 57 e o CT-e OS, modelo 67. O
+// modelo é reconhecido pelo elemento raiz do documento assinado.
 func (c *ClienteCTe) Autorizar(ctx context.Context, cteAssinado []byte) (*RetCTe, error) {
-	if !bytes.Contains(cteAssinado, []byte("<CTe")) {
+	// A ordem importa: "<CTe" também é prefixo de "<CTeOS", então o modelo 67
+	// precisa ser testado primeiro.
+	var mensagem []byte
+	var err error
+	switch {
+	case bytes.Contains(cteAssinado, []byte("<CTeOS")):
+		mensagem, err = cteos.MontarEnvioSincrono(cteAssinado)
+	case bytes.Contains(cteAssinado, []byte("<CTe")):
+		mensagem, err = cte.MontarEnvioSincrono(cteAssinado)
+	default:
 		return nil, errors.New("sefaz: o conteúdo enviado não é um CT-e")
 	}
-	mensagem, err := cte.MontarEnvioSincrono(cteAssinado)
 	if err != nil {
 		return nil, err
 	}
