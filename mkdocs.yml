@@ -55,6 +55,7 @@ nav:
       - Emissão de NFC-e: nfce.md
       - Eventos: eventos.md
       - Distribuição de DF-e: distribuicao.md
+      - DANFE e cupom: danfe.md
       - Assinatura digital: assinatura.md
       - Serviços da SEFAZ: sefaz.md
       - Valores decimais: decimais.md

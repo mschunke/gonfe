@@ -39,3 +39,6 @@ __pycache__/
 .idea/
 *.swp
 .DS_Store
+
+# PDFs gerados em teste manual
+*.pdf
