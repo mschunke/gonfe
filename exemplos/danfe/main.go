@@ -4,7 +4,7 @@
 //
 //	go run ./exemplos/danfe -xml ./43260...-procNFe.xml -saida ./danfe.pdf
 //
-// Sem um XML, o comando monta documentos de demonstração e gera as quatro
+// Sem um XML, o comando monta documentos de demonstração e gera as cinco
 // formas do documento auxiliar, para conferir o leiaute:
 //
 //	go run ./exemplos/danfe -amostra
@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"github.com/mschunke/gonfe/cte"
+	"github.com/mschunke/gonfe/cteos"
 	"github.com/mschunke/gonfe/danfe"
 	"github.com/mschunke/gonfe/mdfe"
 	"github.com/mschunke/gonfe/nfce"
@@ -169,7 +170,109 @@ func gerarAmostras() error {
 		return err
 	}
 	fmt.Printf("gravado: amostra-damdfe.pdf (%d bytes)\n", len(damdfe))
+
+	// DACTE OS do CT-e OS, um fretamento de ônibus.
+	fretamento := montarFretamento()
+	if err := fretamento.Preparar(); err != nil {
+		return err
+	}
+	dacteos, err := danfe.DACTEOS(fretamento, protocoloCTeOS(fretamento), danfe.Opcoes{
+		Mensagem: "Amostra gerada pelo GoNFE — não é documento fiscal",
+	})
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile("amostra-dacte-os.pdf", dacteos, 0o644); err != nil {
+		return err
+	}
+	fmt.Printf("gravado: amostra-dacte-os.pdf (%d bytes)\n", len(dacteos))
 	return nil
+}
+
+func montarFretamento() *cteos.CTeOS {
+	c := cteos.Novo(cteos.ServicoTransportePessoas)
+
+	ide := &c.InfCte.Ide
+	ide.CFOP = "5357"
+	ide.NatOp = "PRESTACAO DE SERVICO DE TRANSPORTE DE PESSOAS"
+	ide.Serie, ide.NCT, ide.CCT = 1, 432, "55667788"
+	ide.DhEmi = tipos.DH("2026-03-04T07:30:00-03:00")
+	ide.TpAmb = cte.Homologacao
+	ide.CMunEnv, ide.XMunEnv, ide.UFEnv = 4314902, "PORTO ALEGRE", "RS"
+	ide.CMunIni, ide.XMunIni, ide.UFIni = 4314902, "PORTO ALEGRE", "RS"
+	ide.CMunFim, ide.XMunFim, ide.UFFim = 4305108, "CAXIAS DO SUL", "RS"
+	ide.IndIEToma = cte.ContribuinteICMS
+
+	c.InfCte.Emit = cte.Emit{
+		CNPJ: "12345678000195", IE: "0961234567",
+		XNome: "VIACAO EXEMPLO LTDA", XFant: "EXEMPLO TURISMO",
+		EnderEmit: cte.Endereco{
+			XLgr: "AVENIDA DAS INDUSTRIAS", Nro: "2000", XBairro: "DISTRITO INDUSTRIAL",
+			CMun: 4314902, XMun: "PORTO ALEGRE", CEP: "91150000", UF: "RS",
+			CPais: 1058, XPais: "BRASIL",
+		},
+	}
+	c.InfCte.Toma = &cteos.Toma{
+		CNPJ: "11222333000181", IE: "1234567890",
+		XNome: "EMPRESA CONTRATANTE SA", Fone: "5133331111",
+		EnderToma: &cte.Endereco{
+			XLgr: "RUA DO ESCRITORIO", Nro: "100", XBairro: "CENTRO",
+			CMun: 4314902, XMun: "PORTO ALEGRE", CEP: "90000000", UF: "RS",
+			CPais: 1058, XPais: "BRASIL",
+		},
+	}
+
+	c.InfCte.VPrest.Comp = []cte.Componente{
+		{XNome: "SERVICO DE FRETAMENTO", VComp: tipos.D("2400.00")},
+		{XNome: "PEDAGIO", VComp: tipos.D("100.00")},
+	}
+	base := tipos.D("2500.00")
+	c.InfCte.Imp.ICMS.ICMS00 = &cte.ICMS00{
+		CST: "00", VBC: base, PICMS: tipos.D("12.00"),
+		VICMS: base.Percentual(tipos.D("12.00"), 2),
+	}
+
+	c.InfCte.InfCTeNorm.InfServico = cteos.InfServico{
+		XDescServ: "FRETAMENTO EVENTUAL DE ONIBUS PARA EXCURSAO DE PORTO ALEGRE A CAXIAS DO SUL, " +
+			"COM RETORNO NO MESMO DIA E PARADA PROGRAMADA EM BENTO GONCALVES",
+		InfQ: &cteos.InfQ{QCarga: tipos.D("42")},
+	}
+	c.InfCte.InfCTeNorm.InfModal.RodoOS = &cteos.RodoOS{
+		TAF: "1234567890",
+		Veic: &cteos.Veiculo{
+			Placa: "ABC1D23", RENAVAM: "12345678901", UF: "RS",
+			Prop: &cteos.Proprietario{
+				CNPJ: "99999999000191", TAF: "9876543210",
+				XNome: "LOCADORA DE ONIBUS EXEMPLO LTDA", IE: "0987654321",
+				UF: "RS", TpProp: cteos.ProprietarioOutrosOperadores,
+			},
+		},
+		InfFretamento: &cteos.InfFretamento{
+			TpFretamento: cteos.FretamentoEventual,
+			DhViagem:     tipos.Ptr(tipos.DH("2026-03-06T05:00:00-03:00")),
+		},
+	}
+	c.InfCte.InfCTeNorm.Seg = []cteos.Seguro{{
+		RespSeg: cteos.SeguroEmitente, XSeg: "SEGURADORA EXEMPLO SA", NApol: "APL-2026-0099",
+	}}
+	for i := 1; i <= 3; i++ {
+		c.InfCte.InfCTeNorm.InfDocRef = append(c.InfCte.InfCTeNorm.InfDocRef, cteos.InfDocRef{
+			NDoc:  fmt.Sprintf("BP-%05d", i),
+			Serie: "1",
+			DEmi:  tipos.Ptr(tipos.DT("2026-03-01")),
+			VDoc:  tipos.Ptr(tipos.D("59.50")),
+		})
+	}
+	c.InfCte.Compl = &cte.Compl{XObs: "Embarque as 05h no terminal rodoviario."}
+	return c
+}
+
+func protocoloCTeOS(c *cteos.CTeOS) *cte.ProtCTe {
+	return &cte.ProtCTe{InfProt: cte.InfProt{
+		TpAmb: cte.Homologacao, VerAplic: "RS20260304", ChCTe: c.Chave(),
+		DhRecbto: tipos.DH("2026-03-04T07:30:30-03:00"),
+		NProt:    "143260000011111", CStat: 100, XMotivo: "Autorizado o uso do CT-e",
+	}}
 }
 
 // As chaves abaixo são de demonstração, mas com dígito verificador correto: o

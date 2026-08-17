@@ -1,7 +1,7 @@
 # Documentos auxiliares em PDF
 
 O pacote [`danfe`](https://pkg.go.dev/github.com/mschunke/gonfe/danfe) gera os
-quatro documentos auxiliares em PDF.
+cinco documentos auxiliares em PDF.
 
 | Documento auxiliar | Documento fiscal | Função | Formato |
 | --- | --- | --- | --- |
@@ -21,11 +21,11 @@ if err != nil {
 os.WriteFile("danfe.pdf", documento, 0o644)
 ```
 
-As funções `Gerar*` recebem o XML de distribuição — `nfeProc`, `cteProc` ou
-`mdfeProc` — e cuidam da leitura. `Gerar` ainda escolhe entre DANFE e cupom pelo
-modelo: 55 vira DANFE, 65 vira cupom. Quando o documento já está interpretado em
-memória, chame `DANFE`, `Cupom`, `DACTE` ou `DAMDFE` diretamente, passando o
-documento e o protocolo.
+As funções `Gerar*` recebem o XML de distribuição — `nfeProc`, `cteProc`,
+`cteOSProc` ou `mdfeProc` — e cuidam da leitura. `Gerar` ainda escolhe entre
+DANFE e cupom pelo modelo: 55 vira DANFE, 65 vira cupom. Quando o documento já
+está interpretado em memória, chame `DANFE`, `Cupom`, `DACTE`, `DACTEOS` ou
+`DAMDFE` diretamente, passando o documento e o protocolo.
 
 Todos aceitam as mesmas [opções](#opcoes) e produzem paginação automática.
 
@@ -40,7 +40,7 @@ biblioteca de barcode.
 
 !!! warning "Sobre a fidelidade ao manual"
 
-    Os quatro leiautes seguem a **estrutura de blocos** dos manuais de
+    Os cinco leiautes seguem a **estrutura de blocos** dos manuais de
     especificação técnica, na ordem que eles descrevem. Nenhum é uma reprodução
     milimétrica do formulário oficial, e nenhum passou por homologação visual em
     SEFAZ alguma.
@@ -158,10 +158,10 @@ As tarjas saem sozinhas quando o documento pede: uma nota em homologação receb
 `SEM VALOR FISCAL`, uma denegada recebe `USO DENEGADO` e uma sem protocolo
 recebe `SEM AUTORIZAÇÃO`.
 
-`Orientacao` gira a folha e dá mais largura aos blocos. No DACTE e no DAMDFE a
-estrutura desenhada é a mesma nas duas orientações — não é o leiaute paisagem
-próprio que o manual do DACTE descreve, e o campo `tpImp` do documento não é
-consultado.
+`Orientacao` gira a folha e dá mais largura aos blocos. Nos documentos do
+transporte a estrutura desenhada é a mesma nas duas orientações — não é o
+leiaute paisagem próprio que o manual do DACTE descreve, e o campo `tpImp` do
+documento não é consultado.
 
 ## O QR Code da NFC-e
 
@@ -234,13 +234,13 @@ func baixarDANFE(w http.ResponseWriter, r *http.Request) {
 go run ./exemplos/danfe -amostra
 ```
 
-Gera os quatro arquivos — `amostra-danfe.pdf`, `amostra-cupom.pdf`,
-`amostra-dacte.pdf` e `amostra-damdfe.pdf` — com documentos de demonstração, sem
-precisar de certificado nem de XML. É o caminho mais rápido para julgar o
-leiaute.
+Gera os cinco arquivos — `amostra-danfe.pdf`, `amostra-cupom.pdf`,
+`amostra-dacte.pdf`, `amostra-dacte-os.pdf` e `amostra-damdfe.pdf` — com
+documentos de demonstração, sem precisar de certificado nem de XML. É o caminho
+mais rápido para julgar o leiaute.
 
-Para gerar a partir de um XML real, o mesmo comando serve aos três documentos: o
-tipo é reconhecido pelo elemento raiz.
+Para gerar a partir de um XML real, o mesmo comando serve a todos: o tipo é
+reconhecido pelo elemento raiz.
 
 ```bash
 go run ./exemplos/danfe -xml ./43260...-procCTe.xml
