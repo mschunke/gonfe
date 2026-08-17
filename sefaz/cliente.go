@@ -289,24 +289,29 @@ func (c *Cliente) Chamar(ctx context.Context, servico Servico, mensagem []byte) 
 	return c.transmitir(ctx, endereco, servico, mensagem)
 }
 
-// transmitir envia a mensagem a um endereço já resolvido e devolve o corpo da
-// resposta, depois de conferir o status HTTP e a ausência de falha SOAP.
+// transmitir envia a mensagem a um endereço já resolvido, montando o envelope
+// do serviço.
 func (c *Cliente) transmitir(ctx context.Context, endereco string, servico Servico, mensagem []byte) ([]byte, error) {
-	envelope := montarEnvelope(servico, mensagem)
+	return transmitirEnvelope(ctx, c.http, endereco, acaoSOAP(servico), montarEnvelope(servico, mensagem))
+}
 
+// transmitirEnvelope faz a requisição HTTP e devolve o corpo da resposta,
+// depois de conferir o status e a ausência de falha SOAP. É compartilhada pelos
+// clientes de NF-e e de CT-e, que diferem apenas no formato do envelope.
+func transmitirEnvelope(ctx context.Context, cliente *http.Client, endereco, acao string, envelope []byte) ([]byte, error) {
 	requisicao, err := http.NewRequestWithContext(ctx, http.MethodPost, endereco, bytes.NewReader(envelope))
 	if err != nil {
 		return nil, fmt.Errorf("sefaz: montagem da requisição para %s: %w", endereco, err)
 	}
 	tipoConteudo := "application/soap+xml; charset=utf-8"
-	if acao := acaoSOAP(servico); acao != "" {
+	if acao != "" {
 		tipoConteudo += `;action="` + acao + `"`
 	}
 	requisicao.Header.Set("Content-Type", tipoConteudo)
 	requisicao.Header.Set("Accept", "application/soap+xml, text/xml")
 	requisicao.Header.Set("User-Agent", "gonfe")
 
-	resposta, err := c.http.Do(requisicao)
+	resposta, err := cliente.Do(requisicao)
 	if err != nil {
 		return nil, fmt.Errorf("sefaz: falha na comunicação com %s: %w", endereco, err)
 	}
@@ -321,7 +326,7 @@ func (c *Cliente) transmitir(ctx context.Context, endereco string, servico Servi
 			endereco, resposta.StatusCode, resumir(corpo))
 	}
 	if falha := extrairFalhaSOAP(corpo); falha != "" {
-		return nil, fmt.Errorf("sefaz: %s devolveu falha SOAP: %s", servico, falha)
+		return nil, fmt.Errorf("sefaz: %s devolveu falha SOAP: %s", endereco, falha)
 	}
 	return corpo, nil
 }
