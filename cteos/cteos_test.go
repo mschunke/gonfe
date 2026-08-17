@@ -531,6 +531,46 @@ func TestDescricaoDoServico(t *testing.T) {
 	}
 }
 
+// TestEventosDoCTeServemAoModelo67 fixa que os eventos são comuns aos dois
+// modelos. O elemento raiz é o mesmo, `eventoCTe`, e o que muda é só a chave
+// referenciada — então não há um pacote de eventos do CT-e OS, e não deve
+// haver.
+func TestEventosDoCTeServemAoModelo67(t *testing.T) {
+	c := fretamentoExemplo()
+	if err := c.Preparar(); err != nil {
+		t.Fatalf("Preparar: %v", err)
+	}
+
+	e, err := cte.NovoCancelamento(cte.DadosCancelamento{
+		Chave:         c.Chave(),
+		CNPJ:          cnpjTransportadora,
+		Ambiente:      cte.Homologacao,
+		Protocolo:     "143260000011111",
+		Justificativa: "Prestacao cancelada pelo tomador antes da viagem",
+		UF:            uf.RS,
+	})
+	if err != nil {
+		t.Fatalf("NovoCancelamento: %v", err)
+	}
+
+	if e.Chave() != c.Chave() {
+		t.Errorf("o evento aponta %s, queria %s", e.Chave(), c.Chave())
+	}
+	// A chave referenciada é de modelo 67, e o evento aceita.
+	if e.Chave()[20:22] != "67" {
+		t.Errorf("o modelo na chave do evento é %q", e.Chave()[20:22])
+	}
+
+	cert := certtest.MustGerar(certtest.Opcoes{CNPJ: cnpjTransportadora})
+	assinado, err := e.AssinarCom(cert)
+	if err != nil {
+		t.Fatalf("AssinarCom: %v", err)
+	}
+	if err := xmldsig.Verificar(assinado); err != nil {
+		t.Errorf("Verificar: %v", err)
+	}
+}
+
 func TestLerRejeitaXMLQueNaoEhCTeOS(t *testing.T) {
 	if _, err := cteos.Ler([]byte("<outraCoisa/>")); err == nil {
 		t.Error("esperava erro com XML de outro documento")

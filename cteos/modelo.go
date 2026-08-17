@@ -16,6 +16,10 @@
 // assinatura e o cliente SOAP também são os mesmos — a recepção síncrona do
 // 4.00 atende aos dois modelos.
 //
+// Os eventos também: o elemento raiz é `eventoCTe` nos dois, e o que muda é só
+// a chave referenciada. Use [github.com/mschunke/gonfe/cte.NovoCancelamento] e
+// as demais funções de evento do pacote cte.
+//
 // # Antes de usar em produção
 //
 // O conjunto de campos segue o leiaute 4.00 do CT-e OS, mas este pacote é novo

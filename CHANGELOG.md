@@ -16,6 +16,15 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
   `cte.CondicaoDeUsoCCe`.
 - O registro de prestação em desacordo é do **tomador**, não do emitente — é a
   via que o contratante tem para dizer que o serviço divergiu do contratado.
+- DACTE OS em PDF: `danfe.GerarDACTEOS` e `danfe.DACTEOS`. Onde o DACTE descreve
+  carga e documentos transportados, ele descreve o tomador, o serviço em texto
+  livre, o veículo e os documentos referenciados — bilhetes de passagem e GTV-e
+  na mesma tabela. Não tem canhoto: não há volumes a receber.
+- O comando `exemplos/danfe` reconhece o CT-e OS pelo elemento raiz, testando o
+  modelo 67 antes do 57 porque `<CTe` é prefixo de `<CTeOS`.
+- Teste fixando que os eventos do pacote `cte` servem ao modelo 67: o elemento
+  raiz é `eventoCTe` nos dois, então não há — nem deve haver — um pacote de
+  eventos do CT-e OS.
 
 ## [0.4.0] — 2026-08-17
 

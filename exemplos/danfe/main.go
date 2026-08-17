@@ -86,7 +86,11 @@ func gerarDeArquivo(caminho, saida string, opc danfe.Opcoes) error {
 // O QR Code da NFC-e precisa da matriz codificada, que a biblioteca não
 // produz. Sem ela o cupom sai com a URL em texto.
 func gerarPeloTipo(conteudo []byte, opc danfe.Opcoes) ([]byte, error) {
+	// A ordem importa: "<cteProc" e "<CTe" são prefixos de "<cteOSProc" e
+	// "<CTeOS", então o modelo 67 precisa ser testado primeiro.
 	switch {
+	case bytes.Contains(conteudo, []byte("<cteOSProc")), bytes.Contains(conteudo, []byte("<CTeOS")):
+		return danfe.GerarDACTEOS(conteudo, opc)
 	case bytes.Contains(conteudo, []byte("<cteProc")), bytes.Contains(conteudo, []byte("<CTe")):
 		return danfe.GerarDACTE(conteudo, opc)
 	case bytes.Contains(conteudo, []byte("<mdfeProc")), bytes.Contains(conteudo, []byte("<MDFe")):

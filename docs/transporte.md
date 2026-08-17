@@ -223,6 +223,19 @@ if resposta.ProtCTe.Autorizado() {
 }
 ```
 
+### Eventos
+
+Os eventos são os mesmos dos dois modelos — o elemento raiz é `eventoCTe` em
+ambos, e o que muda é só a chave referenciada. Use as funções do pacote `cte`:
+
+```go
+canc, _ := cte.NovoCancelamento(cte.DadosCancelamento{
+    Chave: c.Chave(), // a chave é de modelo 67; o evento aceita
+    CNPJ: cnpj, Ambiente: cte.Producao, UF: uf.RS,
+    Protocolo: prot.InfProt.NProt, Justificativa: "…",
+})
+```
+
 !!! warning "Este pacote é novo"
 
     O conjunto de campos segue o leiaute 4.00, mas o `cteos` tem menos rodagem
@@ -230,7 +243,9 @@ if resposta.ProtCTe.Autorizado() {
     emitir com valor fiscal. Um grupo fora de ordem é rejeitado na validação de
     esquema, com a mensagem apontando o elemento — falha clara, não silenciosa.
 
-    O DACTE OS em PDF **não** está implementado.
+    O DACTE OS em PDF está em
+    [Documentos auxiliares](danfe.md#o-dacte-os), com o mesmo aviso de
+    fidelidade dos demais.
 
 ## MDF-e
 
@@ -375,8 +390,7 @@ Os detalhes de cada leiaute estão em [Documentos auxiliares](danfe.md).
 | CT-e OS, modelo 67 | Modelo completo, sem rodagem em campo |
 | MDF-e modelo 58, leiaute 3.00 | Modelo completo, modal rodoviário completo |
 | MDF-e — eventos | Encerramento, cancelamento e inclusão de condutor |
-| DACTE e DAMDFE em PDF | Completos — veja [Documentos auxiliares](danfe.md) |
-| DACTE OS em PDF | **Não implementado** |
+| DACTE, DACTE OS e DAMDFE em PDF | Completos — veja [Documentos auxiliares](danfe.md) |
 | Cliente SEFAZ do CT-e e do CT-e OS | Status, autorização e consulta |
 | Cliente SEFAZ do MDF-e | Status, autorização, consulta, eventos e não encerrados |
 

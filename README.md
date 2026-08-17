@@ -22,9 +22,8 @@ seguindo os padrões da Receita Federal e das Secretarias de Fazenda estaduais.
 | **CT-e** — Conhecimento de Transporte, modelo 57, leiaute 4.00 | Modal rodoviário completo, com eventos |
 | **CT-e OS** — Outros Serviços, modelo 67, leiaute 4.00 | Completo, sem rodagem em campo |
 | **MDF-e** — Manifesto de Documentos Fiscais, modelo 58, leiaute 3.00 | Modal rodoviário completo |
-| **DANFE, cupom, DACTE e DAMDFE** em PDF | Completos, sem dependência gráfica |
+| **Documentos auxiliares** em PDF — DANFE, cupom, DACTE, DACTE OS e DAMDFE | Completos, sem dependência gráfica |
 | **Distribuição de DF-e** | Completo |
-| DACTE OS em PDF | Planejado — veja [Roteiro](#roteiro) |
 
 Em NF-e e NFC-e a biblioteca cobre o ciclo inteiro: montagem do documento,
 cálculo dos totais, validação local, assinatura digital, envio à SEFAZ, espera
@@ -212,8 +211,9 @@ próximos passos, nesta ordem:
 - [x] DACTE e DAMDFE em PDF
 - [x] CT-e OS, modelo 67
 - [x] Cliente SEFAZ do MDF-e
-- [ ] DACTE OS em PDF
+- [x] Eventos do CT-e e DACTE OS em PDF
 - [ ] Demais modais de CT-e e MDF-e com rodagem em produção
+- [ ] Distribuição de DF-e do CT-e e do MDF-e
 
 Contribuições são bem-vindas; veja [CONTRIBUTING.md](CONTRIBUTING.md).
 

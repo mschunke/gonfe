@@ -8,6 +8,7 @@ quatro documentos auxiliares em PDF.
 | DANFE | NF-e, modelo 55 | `Gerar` ou `DANFE` | A4 |
 | Cupom | NFC-e, modelo 65 | `Gerar` ou `Cupom` | bobina |
 | DACTE | CT-e, modelo 57 | `GerarDACTE` ou `DACTE` | A4 |
+| DACTE OS | CT-e OS, modelo 67 | `GerarDACTEOS` ou `DACTEOS` | A4 |
 | DAMDFE | MDF-e, modelo 58 | `GerarDAMDFE` ou `DAMDFE` | A4 |
 
 ```go
@@ -97,6 +98,19 @@ Dois detalhes de comportamento que economizam trabalho:
   os dados daquela parte. Um `toma4` é usado como está.
 - **A chave preenche a tabela.** Nos documentos originários, o CNPJ do emitente,
   a série e o número saem da própria chave de acesso da NF-e transportada.
+
+## O DACTE OS
+
+```go
+dacteos, err := danfe.GerarDACTEOS(procCTeOS, danfe.Opcoes{})
+```
+
+Onde o DACTE descreve carga e documentos transportados, o DACTE OS descreve um
+tomador, o serviço em texto livre, o veículo e os documentos referenciados —
+bilhetes de passagem e GTV-e, que saem na mesma tabela.
+
+Ele **não tem canhoto**: não há volumes a receber, então não há recibo de
+entrega, e `SemCanhoto` é ignorada.
 
 ## O DAMDFE
 
