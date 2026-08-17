@@ -177,5 +177,7 @@ Primeira versão. Cobre o ciclo completo de emissão de NF-e e NFC-e no leiaute
 - Eventos, distribuição de DF-e, CT-e, MDF-e e DANFE ainda não estão
   implementados; veja o roteiro no README.
 
-[Não lançado]: https://github.com/mschunke/gonfe/compare/v0.1.0...HEAD
+[Não lançado]: https://github.com/mschunke/gonfe/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/mschunke/gonfe/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/mschunke/gonfe/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mschunke/gonfe/releases/tag/v0.1.0
