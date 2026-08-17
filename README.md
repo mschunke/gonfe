@@ -17,11 +17,14 @@ seguindo os padrões da Receita Federal e das Secretarias de Fazenda estaduais.
 | --- | --- |
 | **NF-e** — Nota Fiscal Eletrônica, modelo 55, leiaute 4.00 | Completo |
 | **NFC-e** — Nota Fiscal de Consumidor Eletrônica, modelo 65 | Completo, com QR Code versão 2 |
-| CT-e, MDF-e, eventos (cancelamento, CC-e, manifestação) | Planejados — veja [Roteiro](#roteiro) |
+| **Eventos** — cancelamento, carta de correção, manifestação | Completo |
+| **Inutilização** de faixas de numeração | Completo |
+| CT-e, MDF-e, distribuição de DF-e | Planejados — veja [Roteiro](#roteiro) |
 
 Em NF-e e NFC-e a biblioteca cobre o ciclo inteiro: montagem do documento,
 cálculo dos totais, validação local, assinatura digital, envio à SEFAZ, espera
-pelo processamento e montagem do arquivo de distribuição.
+pelo processamento, montagem do arquivo de distribuição e o ciclo de vida
+posterior — correção, cancelamento e inutilização.
 
 ## Princípios
 
@@ -127,12 +130,31 @@ func main() {
 
 O exemplo completo e executável está em
 [`exemplos/emitir-nfe`](exemplos/emitir-nfe/main.go). Há também
-[`exemplos/emitir-nfce`](exemplos/emitir-nfce/main.go) e
+[`exemplos/emitir-nfce`](exemplos/emitir-nfce/main.go),
+[`exemplos/eventos`](exemplos/eventos/main.go) e
 [`exemplos/status-servico`](exemplos/status-servico/main.go), que serve para
 conferir a instalação:
 
 ```bash
 go run ./exemplos/status-servico -cert ./certificado.pfx -uf RS
+```
+
+Depois de autorizada, a nota tem um ciclo de vida:
+
+```go
+// Corrigir o que não altera valor nem partes.
+cc, _ := evento.NovaCartaCorrecao(evento.DadosCartaCorrecao{
+    Chave: chave, CNPJ: cnpj, UF: uf.RS, Ambiente: nfe.Producao,
+    Correcao: "Fica corrigido o endereco de entrega para Rua Nova, 100",
+})
+assinada, _ := cc.AssinarCom(cert)
+ret, _ := cliente.EnviarEvento(ctx, assinada)
+
+// Cancelar dentro do prazo.
+canc, _ := evento.NovoCancelamento(evento.DadosCancelamento{
+    Chave: chave, CNPJ: cnpj, UF: uf.RS, Ambiente: nfe.Producao,
+    Protocolo: prot.InfProt.NProt, Justificativa: "Pedido cancelado pelo cliente",
+})
 ```
 
 ## Pacotes
@@ -141,6 +163,7 @@ go run ./exemplos/status-servico -cert ./certificado.pfx -uf RS
 | --- | --- |
 | [`nfe`](https://pkg.go.dev/github.com/mschunke/gonfe/nfe) | Modelo de dados 4.00, cálculo de totais, validação, montagem de lote e de `nfeProc` |
 | [`nfce`](https://pkg.go.dev/github.com/mschunke/gonfe/nfce) | QR Code versão 2 e URLs de consulta da NFC-e |
+| [`evento`](https://pkg.go.dev/github.com/mschunke/gonfe/evento) | Cancelamento, carta de correção, manifestação do destinatário e inutilização |
 | [`sefaz`](https://pkg.go.dev/github.com/mschunke/gonfe/sefaz) | Endereços por UF, cliente SOAP 1.2 com TLS mútuo e operações |
 | [`xmldsig`](https://pkg.go.dev/github.com/mschunke/gonfe/xmldsig) | Assinatura e verificação no perfil da SEFAZ |
 | [`certificado`](https://pkg.go.dev/github.com/mschunke/gonfe/certificado) | Certificados A1 em PKCS#12, com extração dos OIDs da ICP-Brasil |
@@ -170,7 +193,7 @@ A arquitetura já separa o que é comum a todos os documentos — chave de acess
 canonicalização, assinatura, cliente SOAP — do que é específico da NF-e. Os
 próximos passos, nesta ordem:
 
-- [ ] Eventos: cancelamento, carta de correção, manifestação do destinatário e
+- [x] Eventos: cancelamento, carta de correção, manifestação do destinatário e
       inutilização de numeração
 - [ ] Distribuição de DF-e (`NFeDistribuicaoDFe`)
 - [ ] CT-e e CT-e OS, modelos 57 e 67

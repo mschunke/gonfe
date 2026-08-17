@@ -11,39 +11,53 @@ go get github.com/mschunke/gonfe
 
 <div class="grid cards" markdown>
 
-- :material-file-document: **NF-e — modelo 55**
+- :octicons-file-24: **NF-e — modelo 55**
 
     Leiaute 4.00 completo: montagem, cálculo de totais, validação, assinatura,
     envio e arquivo de distribuição.
 
     [:octicons-arrow-right-24: Emissão de NF-e](nfe.md)
 
-- :material-receipt: **NFC-e — modelo 65**
+- :octicons-credit-card-24: **NFC-e — modelo 65**
 
     Tudo da NF-e mais o QR Code versão 2 e a URL de consulta, com as regras
     específicas do cupom eletrônico.
 
     [:octicons-arrow-right-24: Emissão de NFC-e](nfce.md)
 
-- :material-certificate: **Certificado A1**
+- :octicons-shield-check-24: **Certificado A1**
 
     PKCS#12 moderno, sem CGO, com extração do CNPJ dos OIDs da ICP-Brasil e
     autenticação mútua TLS.
 
     [:octicons-arrow-right-24: Certificado digital](certificado.md)
 
-- :material-draw-pen: **Assinatura XML-DSig**
+- :octicons-lock-24: **Assinatura XML-DSig**
 
     Canonicalização C14N 1.0 própria, assinatura no perfil da SEFAZ e
     verificação de documentos recebidos.
 
     [:octicons-arrow-right-24: Assinatura digital](assinatura.md)
 
+- :octicons-history-24: **Eventos**
+
+    Cancelamento, carta de correção, manifestação do destinatário e
+    inutilização de faixas de numeração.
+
+    [:octicons-arrow-right-24: Eventos](eventos.md)
+
+- :octicons-beaker-24: **Homologação**
+
+    Roteiro de testes no ambiente da SEFAZ, do primeiro contato ao ciclo
+    completo, com os códigos de rejeição mais comuns.
+
+    [:octicons-arrow-right-24: Testes em homologação](homologacao.md)
+
 </div>
 
-CT-e, MDF-e e os eventos de cancelamento, correção e manifestação estão no
-roteiro; a infraestrutura comum — chave de acesso, canonicalização, assinatura
-e cliente SOAP — já é compartilhada e não precisará ser reescrita.
+CT-e, MDF-e e a distribuição de DF-e estão no roteiro; a infraestrutura comum —
+chave de acesso, canonicalização, assinatura e cliente SOAP — já é compartilhada
+e não precisará ser reescrita.
 
 ## Por que mais uma biblioteca
 

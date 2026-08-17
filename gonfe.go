@@ -9,6 +9,8 @@
 //   - [github.com/mschunke/gonfe/nfe] — modelo de dados da NF-e e da NFC-e no
 //     leiaute 4.00, cálculo de totais, validação e montagem de lote.
 //   - [github.com/mschunke/gonfe/nfce] — QR Code e URLs de consulta da NFC-e.
+//   - [github.com/mschunke/gonfe/evento] — cancelamento, carta de correção,
+//     manifestação do destinatário e inutilização de numeração.
 //   - [github.com/mschunke/gonfe/sefaz] — endereços dos serviços por unidade da
 //     federação e cliente SOAP com autenticação mútua TLS.
 //   - [github.com/mschunke/gonfe/xmldsig] — assinatura e verificação no perfil
@@ -51,7 +53,7 @@
 package gonfe
 
 // Versao é a versão desta biblioteca.
-const Versao = "0.1.0"
+const Versao = "0.2.0"
 
 // VersaoLeiaute é a versão do leiaute dos documentos fiscais implementada.
 const VersaoLeiaute = "4.00"

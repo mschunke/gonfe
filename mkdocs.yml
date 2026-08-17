@@ -53,10 +53,12 @@ nav:
   - Guias:
       - Emissão de NF-e: nfe.md
       - Emissão de NFC-e: nfce.md
+      - Eventos: eventos.md
       - Assinatura digital: assinatura.md
       - Serviços da SEFAZ: sefaz.md
       - Valores decimais: decimais.md
       - Validação: validacao.md
+      - Testes em homologação: homologacao.md
   - Referência:
       - Pacotes: pacotes.md
       - Perguntas frequentes: faq.md
@@ -73,6 +75,11 @@ markdown_extensions:
   - toc:
       permalink: true
   - pymdownx.details
+  # Sem esta extensão os atalhos de ícone (:material-…:, :octicons-…:) saem
+  # como texto cru no lugar do desenho.
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span

@@ -38,6 +38,11 @@ const (
 	ServicoConsultaProtocolo Servico = "NFeConsultaProtocolo4"
 	// ServicoConsultaCadastro consulta o cadastro de um contribuinte na UF.
 	ServicoConsultaCadastro Servico = "CadConsultaCadastro4"
+	// ServicoRecepcaoEvento registra eventos: cancelamento, carta de correção
+	// e manifestação do destinatário.
+	ServicoRecepcaoEvento Servico = "NFeRecepcaoEvento4"
+	// ServicoInutilizacao inutiliza faixas de numeração não usadas.
+	ServicoInutilizacao Servico = "NFeInutilizacao4"
 )
 
 // Servicos lista todos os serviços implementados.
@@ -45,6 +50,7 @@ func Servicos() []Servico {
 	return []Servico{
 		ServicoStatus, ServicoAutorizacao, ServicoRetAutorizacao,
 		ServicoConsultaProtocolo, ServicoConsultaCadastro,
+		ServicoRecepcaoEvento, ServicoInutilizacao,
 	}
 }
 
@@ -71,6 +77,9 @@ const (
 	AutorizadorSVCAN Autorizador = "SVC-AN"
 	// AutorizadorSVCRS é a Sefaz Virtual de Contingência do Rio Grande do Sul.
 	AutorizadorSVCRS Autorizador = "SVC-RS"
+	// AutorizadorAN é o Ambiente Nacional, destino das manifestações do
+	// destinatário. Não autoriza notas.
+	AutorizadorAN Autorizador = "AN"
 )
 
 // autorizadorNFe mapeia cada unidade da federação ao ambiente que processa suas
@@ -139,6 +148,18 @@ var caminhosASMX = map[Servico]string{
 	ServicoAutorizacao:       "NfeAutorizacao/NFeAutorizacao4.asmx",
 	ServicoRetAutorizacao:    "NfeRetAutorizacao/NFeRetAutorizacao4.asmx",
 	ServicoConsultaProtocolo: "NfeConsulta/NfeConsulta4.asmx",
+	ServicoRecepcaoEvento:    "recepcaoevento/recepcaoevento4.asmx",
+	ServicoInutilizacao:      "nfeinutilizacao/nfeinutilizacao4.asmx",
+}
+
+// caminhosASMXContingencia é o subconjunto oferecido pelas Sefaz Virtuais de
+// Contingência, que não inutilizam numeração.
+var caminhosASMXContingencia = map[Servico]string{
+	ServicoStatus:            "NfeStatusServico/NfeStatusServico4.asmx",
+	ServicoAutorizacao:       "NfeAutorizacao/NFeAutorizacao4.asmx",
+	ServicoRetAutorizacao:    "NfeRetAutorizacao/NFeRetAutorizacao4.asmx",
+	ServicoConsultaProtocolo: "NfeConsulta/NfeConsulta4.asmx",
+	ServicoRecepcaoEvento:    "recepcaoevento/recepcaoevento4.asmx",
 }
 
 // caminhosServices é o formato usado pelos ambientes que expõem os serviços
@@ -149,6 +170,8 @@ var caminhosServices = map[Servico]string{
 	ServicoRetAutorizacao:    "NFeRetAutorizacao4",
 	ServicoConsultaProtocolo: "NFeConsultaProtocolo4",
 	ServicoConsultaCadastro:  "CadConsultaCadastro4",
+	ServicoRecepcaoEvento:    "NFeRecepcaoEvento4",
+	ServicoInutilizacao:      "NFeInutilizacao4",
 }
 
 var endpointsNFe = map[Autorizador]conjunto{
@@ -165,6 +188,8 @@ var endpointsNFe = map[Autorizador]conjunto{
 			ServicoAutorizacao:       "NFeAutorizacao4/NFeAutorizacao4.asmx",
 			ServicoRetAutorizacao:    "NFeRetAutorizacao4/NFeRetAutorizacao4.asmx",
 			ServicoConsultaProtocolo: "NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx",
+			ServicoRecepcaoEvento:    "RecepcaoEvento4/RecepcaoEvento4.asmx",
+			ServicoInutilizacao:      "NFeInutilizacao4/NFeInutilizacao4.asmx",
 		},
 	},
 	AutorizadorSVCAN: {
@@ -175,12 +200,21 @@ var endpointsNFe = map[Autorizador]conjunto{
 			ServicoAutorizacao:       "NFeAutorizacao4/NFeAutorizacao4.asmx",
 			ServicoRetAutorizacao:    "NFeRetAutorizacao4/NFeRetAutorizacao4.asmx",
 			ServicoConsultaProtocolo: "NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx",
+			ServicoRecepcaoEvento:    "RecepcaoEvento4/RecepcaoEvento4.asmx",
 		},
 	},
 	AutorizadorSVCRS: {
 		producao:    "https://nfe.svrs.rs.gov.br/ws/",
 		homologacao: "https://nfe-homologacao.svrs.rs.gov.br/ws/",
-		caminhos:    caminhosASMX,
+		caminhos:    caminhosASMXContingencia,
+	},
+	// O Ambiente Nacional recebe apenas as manifestações do destinatário.
+	AutorizadorAN: {
+		producao:    "https://www1.nfe.fazenda.gov.br/",
+		homologacao: "https://hom1.nfe.fazenda.gov.br/",
+		caminhos: map[Servico]string{
+			ServicoRecepcaoEvento: "NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx",
+		},
 	},
 	AutorizadorSP: {
 		producao:    "https://nfe.fazenda.sp.gov.br/ws/",
@@ -191,6 +225,8 @@ var endpointsNFe = map[Autorizador]conjunto{
 			ServicoRetAutorizacao:    "nferetautorizacao4.asmx",
 			ServicoConsultaProtocolo: "nfeconsultaprotocolo4.asmx",
 			ServicoConsultaCadastro:  "cadconsultacadastro4.asmx",
+			ServicoRecepcaoEvento:    "nferecepcaoevento4.asmx",
+			ServicoInutilizacao:      "nfeinutilizacao4.asmx",
 		},
 	},
 	AutorizadorMG: {
@@ -222,6 +258,8 @@ var endpointsNFe = map[Autorizador]conjunto{
 			ServicoRetAutorizacao:    "NfeRetAutorizacao4",
 			ServicoConsultaProtocolo: "NfeConsulta4",
 			ServicoConsultaCadastro:  "CadConsultaCadastro4",
+			ServicoRecepcaoEvento:    "RecepcaoEvento4",
+			ServicoInutilizacao:      "NfeInutilizacao4",
 		},
 	},
 	AutorizadorPE: {
@@ -238,6 +276,8 @@ var endpointsNFe = map[Autorizador]conjunto{
 			ServicoRetAutorizacao:    "NFeRetAutorizacao4/NFeRetAutorizacao4.asmx",
 			ServicoConsultaProtocolo: "NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx",
 			ServicoConsultaCadastro:  "CadConsultaCadastro4/CadConsultaCadastro4.asmx",
+			ServicoRecepcaoEvento:    "RecepcaoEvento4/RecepcaoEvento4.asmx",
+			ServicoInutilizacao:      "NFeInutilizacao4/NFeInutilizacao4.asmx",
 		},
 	},
 	AutorizadorAM: {
@@ -249,6 +289,8 @@ var endpointsNFe = map[Autorizador]conjunto{
 			ServicoRetAutorizacao:    "NfeRetAutorizacao4",
 			ServicoConsultaProtocolo: "NfeConsulta4",
 			ServicoConsultaCadastro:  "CadConsultaCadastro4",
+			ServicoRecepcaoEvento:    "RecepcaoEvento4",
+			ServicoInutilizacao:      "NfeInutilizacao4",
 		},
 	},
 }
@@ -262,7 +304,7 @@ var endpointsNFCe = map[Autorizador]conjunto{
 	AutorizadorSVCRS: {
 		producao:    "https://nfce.svrs.rs.gov.br/ws/",
 		homologacao: "https://nfce-homologacao.svrs.rs.gov.br/ws/",
-		caminhos:    caminhosASMX,
+		caminhos:    caminhosASMXContingencia,
 	},
 	AutorizadorSP: {
 		producao:    "https://nfce.fazenda.sp.gov.br/ws/",
@@ -272,6 +314,8 @@ var endpointsNFCe = map[Autorizador]conjunto{
 			ServicoAutorizacao:       "nfeautorizacao4.asmx",
 			ServicoRetAutorizacao:    "nferetautorizacao4.asmx",
 			ServicoConsultaProtocolo: "nfeconsultaprotocolo4.asmx",
+			ServicoRecepcaoEvento:    "nferecepcaoevento4.asmx",
+			ServicoInutilizacao:      "nfeinutilizacao4.asmx",
 		},
 	},
 	AutorizadorMG: {
@@ -302,6 +346,8 @@ var endpointsNFCe = map[Autorizador]conjunto{
 			ServicoAutorizacao:       "NfeAutorizacao4",
 			ServicoRetAutorizacao:    "NfeRetAutorizacao4",
 			ServicoConsultaProtocolo: "NfeConsulta4",
+			ServicoRecepcaoEvento:    "RecepcaoEvento4",
+			ServicoInutilizacao:      "NfeInutilizacao4",
 		},
 	},
 	AutorizadorPE: {
@@ -317,6 +363,8 @@ var endpointsNFCe = map[Autorizador]conjunto{
 			ServicoAutorizacao:       "NFeAutorizacao4/NFeAutorizacao4.asmx",
 			ServicoRetAutorizacao:    "NFeRetAutorizacao4/NFeRetAutorizacao4.asmx",
 			ServicoConsultaProtocolo: "NFeConsultaProtocolo4/NFeConsultaProtocolo4.asmx",
+			ServicoRecepcaoEvento:    "RecepcaoEvento4/RecepcaoEvento4.asmx",
+			ServicoInutilizacao:      "NFeInutilizacao4/NFeInutilizacao4.asmx",
 		},
 	},
 	AutorizadorAM: {
@@ -327,6 +375,8 @@ var endpointsNFCe = map[Autorizador]conjunto{
 			ServicoAutorizacao:       "NfeAutorizacao4",
 			ServicoRetAutorizacao:    "NfeRetAutorizacao4",
 			ServicoConsultaProtocolo: "NfeConsulta4",
+			ServicoRecepcaoEvento:    "RecepcaoEvento4",
+			ServicoInutilizacao:      "NfeInutilizacao4",
 		},
 	},
 }
@@ -412,6 +462,8 @@ func acaoSOAP(s Servico) string {
 		ServicoRetAutorizacao:    "nfeRetAutorizacaoLote",
 		ServicoConsultaProtocolo: "nfeConsultaNF",
 		ServicoConsultaCadastro:  "consultaCadastro",
+		ServicoRecepcaoEvento:    "nfeRecepcaoEvento",
+		ServicoInutilizacao:      "nfeInutilizacaoNF",
 	}
 	operacao, ok := operacoes[s]
 	if !ok {
@@ -433,6 +485,10 @@ func elementoResposta(s Servico) string {
 		return "retConsSitNFe"
 	case ServicoConsultaCadastro:
 		return "retConsCad"
+	case ServicoRecepcaoEvento:
+		return "retEnvEvento"
+	case ServicoInutilizacao:
+		return "retInutNFe"
 	default:
 		return ""
 	}

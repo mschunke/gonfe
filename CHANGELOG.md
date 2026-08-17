@@ -5,6 +5,50 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
 
 ## [Não lançado]
 
+## [0.2.0] — 2026-08-17
+
+Eventos e inutilização, fechando o ciclo de vida do documento depois da
+autorização.
+
+### Adicionado
+
+- Pacote `evento` com os eventos da NF-e e da NFC-e: carta de correção
+  (110110), cancelamento (110111), cancelamento por substituição (110112) e as
+  quatro manifestações do destinatário (210200, 210210, 210220 e 210240).
+- Inutilização de faixas de numeração (`inutNFe`), com Id de 43 caracteres,
+  assinatura sobre o grupo `infInut` e montagem do comprovante.
+- Montagem de lote `envEvento`, do arquivo de distribuição `procEventoNFe` e do
+  `ProcInutNFe`, todos preservando os bytes assinados.
+- `Cliente.EnviarEvento`, `Cliente.EnviarLoteDeEventos` e `Cliente.Inutilizar`,
+  com os endereços de `NFeRecepcaoEvento4` e `NFeInutilizacao4` de todas as UFs.
+- Roteamento automático das manifestações do destinatário para o Ambiente
+  Nacional, que é outro servidor. Lotes que misturam destinos são recusados
+  antes da transmissão, com a explicação do conflito.
+- `nfe.AjustarParaHomologacao`, que aplica a razão social obrigatória do
+  destinatário na NF-e e a descrição obrigatória do primeiro item na NFC-e.
+- Guia de testes no ambiente de homologação, com roteiro em cinco passos,
+  tabela de códigos de retorno e as armadilhas de consumo indevido.
+- Guia de eventos na documentação e o exemplo executável `exemplos/eventos`.
+
+### Corrigido
+
+- Os atalhos de ícone da documentação (`:octicons-…:`) apareciam como texto
+  cru: faltava a extensão `pymdownx.emoji` apontando para o índice do Material.
+
+### Removido
+
+- `evento.Tipo` não implementa mais `fmt.Stringer`. Um `String()` que devolvia
+  o código mais a descrição corrompia silenciosamente qualquer formatação com
+  `%s` — inclusive a montagem do atributo `Id` do evento, onde o defeito foi
+  encontrado. Para a forma legível, use `Tipo.Rotulo()`.
+
+### Alterado
+
+- Os tipos `RetEvento`, `InfRetEvento` e `ProcEventoNFe` passaram a ser
+  definidos no pacote `evento`; `sefaz` os reexporta como alias, então o código
+  existente continua compilando. `ProcEventoNFe` agora carrega também o evento,
+  não só o retorno.
+
 ## [0.1.0] — 2026-08-16
 
 Primeira versão. Cobre o ciclo completo de emissão de NF-e e NFC-e no leiaute

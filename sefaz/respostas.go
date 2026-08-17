@@ -135,33 +135,6 @@ func (r *RetConsSitNFe) Autorizada() bool {
 	return r != nil && r.ProtNFe.Autorizada()
 }
 
-// ProcEventoNFe é um evento registrado na nota, devolvido pela consulta.
-type ProcEventoNFe struct {
-	Versao    string    `xml:"versao,attr"`
-	RetEvento RetEvento `xml:"retEvento"`
-}
-
-// RetEvento são os dados do registro de um evento.
-type RetEvento struct {
-	Versao    string       `xml:"versao,attr"`
-	InfEvento InfRetEvento `xml:"infEvento"`
-}
-
-// InfRetEvento detalha o registro de um evento.
-type InfRetEvento struct {
-	TpAmb       nfe.Ambiente   `xml:"tpAmb"`
-	VerAplic    string         `xml:"verAplic"`
-	COrgao      int            `xml:"cOrgao"`
-	CStat       int            `xml:"cStat"`
-	XMotivo     string         `xml:"xMotivo"`
-	ChNFe       string         `xml:"chNFe"`
-	TpEvento    string         `xml:"tpEvento"`
-	XEvento     string         `xml:"xEvento"`
-	NSeqEvento  int            `xml:"nSeqEvento"`
-	DhRegEvento tipos.DataHora `xml:"dhRegEvento"`
-	NProt       string         `xml:"nProt"`
-}
-
 // RetConsCad é a resposta da consulta de cadastro de contribuinte.
 type RetConsCad struct {
 	XMLName xml.Name `xml:"retConsCad"`

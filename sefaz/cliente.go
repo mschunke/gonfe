@@ -278,6 +278,12 @@ func (c *Cliente) Chamar(ctx context.Context, servico Servico, mensagem []byte) 
 	if err != nil {
 		return nil, err
 	}
+	return c.transmitir(ctx, endereco, servico, mensagem)
+}
+
+// transmitir envia a mensagem a um endereço já resolvido e devolve o corpo da
+// resposta, depois de conferir o status HTTP e a ausência de falha SOAP.
+func (c *Cliente) transmitir(ctx context.Context, endereco string, servico Servico, mensagem []byte) ([]byte, error) {
 	envelope := montarEnvelope(servico, mensagem)
 
 	requisicao, err := http.NewRequestWithContext(ctx, http.MethodPost, endereco, bytes.NewReader(envelope))
@@ -318,6 +324,11 @@ func (c *Cliente) chamar(ctx context.Context, servico Servico, mensagem []byte, 
 	if err != nil {
 		return err
 	}
+	return interpretar(corpo, servico, destino)
+}
+
+// interpretar recorta o elemento de resposta do serviço e o desserializa.
+func interpretar(corpo []byte, servico Servico, destino any) error {
 	nome := elementoResposta(servico)
 	trecho, err := extrairElemento(corpo, nome)
 	if err != nil {
