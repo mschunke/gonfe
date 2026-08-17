@@ -43,9 +43,15 @@ const (
 	ServicoRecepcaoEvento Servico = "NFeRecepcaoEvento4"
 	// ServicoInutilizacao inutiliza faixas de numeração não usadas.
 	ServicoInutilizacao Servico = "NFeInutilizacao4"
+	// ServicoDistribuicaoDFe entrega os documentos de interesse do consulente.
+	// É oferecido apenas pelo Ambiente Nacional.
+	ServicoDistribuicaoDFe Servico = "NFeDistribuicaoDFe"
 )
 
-// Servicos lista todos os serviços implementados.
+// Servicos lista os serviços oferecidos pelas unidades da federação.
+//
+// A distribuição de DF-e não entra na lista porque não é um serviço estadual:
+// ela existe só no Ambiente Nacional.
 func Servicos() []Servico {
 	return []Servico{
 		ServicoStatus, ServicoAutorizacao, ServicoRetAutorizacao,
@@ -208,12 +214,14 @@ var endpointsNFe = map[Autorizador]conjunto{
 		homologacao: "https://nfe-homologacao.svrs.rs.gov.br/ws/",
 		caminhos:    caminhosASMXContingencia,
 	},
-	// O Ambiente Nacional recebe apenas as manifestações do destinatário.
+	// O Ambiente Nacional recebe as manifestações do destinatário e entrega os
+	// documentos de interesse; não autoriza notas.
 	AutorizadorAN: {
 		producao:    "https://www1.nfe.fazenda.gov.br/",
 		homologacao: "https://hom1.nfe.fazenda.gov.br/",
 		caminhos: map[Servico]string{
-			ServicoRecepcaoEvento: "NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx",
+			ServicoRecepcaoEvento:  "NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx",
+			ServicoDistribuicaoDFe: "NFeDistribuicaoDFe/NFeDistribuicaoDFe.asmx",
 		},
 	},
 	AutorizadorSP: {
@@ -464,6 +472,7 @@ func acaoSOAP(s Servico) string {
 		ServicoConsultaCadastro:  "consultaCadastro",
 		ServicoRecepcaoEvento:    "nfeRecepcaoEvento",
 		ServicoInutilizacao:      "nfeInutilizacaoNF",
+		ServicoDistribuicaoDFe:   "nfeDistDFeInteresse",
 	}
 	operacao, ok := operacoes[s]
 	if !ok {
@@ -489,9 +498,24 @@ func elementoResposta(s Servico) string {
 		return "retEnvEvento"
 	case ServicoInutilizacao:
 		return "retInutNFe"
+	case ServicoDistribuicaoDFe:
+		return "retDistDFeInt"
 	default:
 		return ""
 	}
+}
+
+// invocacaoPropria devolve o nome do elemento que envolve o nfeDadosMsg, para
+// os serviços que não seguem o formato comum.
+//
+// A distribuição de DF-e é a exceção: o corpo do envelope traz
+// nfeDistDFeInteresse, e o nfeDadosMsg fica dentro dele. Enviar no formato dos
+// demais serviços resulta em falha SOAP.
+func invocacaoPropria(s Servico) string {
+	if s == ServicoDistribuicaoDFe {
+		return "nfeDistDFeInteresse"
+	}
+	return ""
 }
 
 // TabelaDeEndpoints devolve todos os endereços conhecidos para o modelo e o

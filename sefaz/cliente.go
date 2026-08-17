@@ -43,6 +43,14 @@ type Config struct {
 	Autorizador Autorizador
 	// Endpoints sobrepõe endereços da tabela embutida, serviço a serviço.
 	Endpoints map[Servico]string
+	// CNPJConsulente identifica quem consulta a distribuição de DF-e, quando
+	// diferente do titular do certificado — o caso de um escritório contábil
+	// que assina com o próprio certificado em nome de um cliente. Vazio usa o
+	// documento do certificado.
+	CNPJConsulente string
+	// CPFConsulente é o equivalente de [Config.CNPJConsulente] para pessoa
+	// física.
+	CPFConsulente string
 	// Timeout limita cada requisição; o padrão é [TimeoutPadrao].
 	Timeout time.Duration
 	// HTTP permite fornecer um cliente próprio, com proxy, instrumentação ou
@@ -342,14 +350,28 @@ func interpretar(corpo []byte, servico Servico, destino any) error {
 
 // montarEnvelope embrulha a mensagem em um envelope SOAP 1.2, dentro do
 // elemento nfeDadosMsg do namespace do serviço.
+//
+// A distribuição de DF-e acrescenta um nível: o nfeDadosMsg vai dentro de um
+// nfeDistDFeInteresse. [invocacaoPropria] identifica esses casos.
 func montarEnvelope(servico Servico, mensagem []byte) []byte {
 	var b bytes.Buffer
 	b.WriteString(`<?xml version="1.0" encoding="utf-8"?>`)
 	b.WriteString(`<soap12:Envelope xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">`)
 	b.WriteString(`<soap12:Body>`)
-	b.WriteString(`<nfeDadosMsg xmlns="` + espacoWSDL(servico) + `">`)
+
+	invocacao := invocacaoPropria(servico)
+	if invocacao != "" {
+		b.WriteString(`<` + invocacao + ` xmlns="` + espacoWSDL(servico) + `">`)
+		b.WriteString(`<nfeDadosMsg>`)
+	} else {
+		b.WriteString(`<nfeDadosMsg xmlns="` + espacoWSDL(servico) + `">`)
+	}
 	b.Write(mensagem)
 	b.WriteString(`</nfeDadosMsg>`)
+	if invocacao != "" {
+		b.WriteString(`</` + invocacao + `>`)
+	}
+
 	b.WriteString(`</soap12:Body>`)
 	b.WriteString(`</soap12:Envelope>`)
 	return b.Bytes()
