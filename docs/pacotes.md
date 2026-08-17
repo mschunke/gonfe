@@ -176,15 +176,10 @@ cliente.EnviarEvento(ctx, assinado)
 cliente.ConsumirDFe(ctx, ultimoNSU, aoReceber)
 ```
 
-O CT-e tem endereços e nomes de serviço próprios, então tem cliente próprio:
-`sefaz.NovoClienteCTe`, que atende aos dois modelos — 57 e 67 —, reconhecendo
-qual é pelo elemento raiz do documento assinado.
-
-!!! warning "O MDF-e ainda não tem cliente"
-
-    O pacote `mdfe` monta, valida e assina o manifesto e seus eventos, mas o
-    `sefaz` ainda não tem o cliente que os transmite. Até lá, use o XML assinado
-    com o seu próprio transporte SOAP.
+O CT-e e o MDF-e têm endereços e nomes de serviço próprios, então têm clientes
+próprios: `sefaz.NovoClienteCTe` e `sefaz.NovoClienteMDFe`. O do CT-e atende aos
+dois modelos — 57 e 67 —, reconhecendo qual é pelo elemento raiz do documento
+assinado.
 
 ## Blocos de base
 

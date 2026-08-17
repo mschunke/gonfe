@@ -211,8 +211,7 @@ próximos passos, nesta ordem:
 - [x] Geração do DANFE e do cupom da NFC-e em PDF
 - [x] DACTE e DAMDFE em PDF
 - [x] CT-e OS, modelo 67
-- [ ] Cliente SEFAZ do MDF-e: hoje o manifesto é montado e assinado, mas não
-      transmitido
+- [x] Cliente SEFAZ do MDF-e
 - [ ] DACTE OS em PDF
 - [ ] Demais modais de CT-e e MDF-e com rodagem em produção
 

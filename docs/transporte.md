@@ -241,6 +241,37 @@ assinado, err := m.AssinarCom(cert)
 **valor e o peso da carga não são calculados**: eles não saem dos documentos
 relacionados, e sim da pesagem e da nota de quem embarca.
 
+### Transmissão
+
+A recepção do 3.00 também é síncrona e comprimida. O MDF-e é **centralizado**:
+não há autorizador estadual, todas as unidades da federação são atendidas pela
+Sefaz Virtual do Rio Grande do Sul.
+
+```go
+cliente, _ := sefaz.NovoClienteMDFe(sefaz.ConfigMDFe{
+    UF: uf.RS, Ambiente: mdfe.Homologacao, Certificado: cert,
+})
+
+resposta, err := cliente.Autorizar(ctx, assinado)
+if resposta.ProtMDFe.Autorizado() {
+    proc, _ := mdfe.MontarMDFeProc(assinado, resposta.ProtMDFe)
+}
+```
+
+### Descobrindo o que travou a emissão
+
+Quando a SEFAZ rejeita a autorização por manifesto em aberto, ela **não diz
+qual**. Esta consulta diz:
+
+```go
+pendentes, err := cliente.NaoEncerrados(ctx, cnpj)
+for _, chave := range pendentes.Chaves() {
+    log.Printf("encerrar antes de emitir: %s", chave)
+}
+```
+
+Vale chamá-la antes de emitir, não só depois de apanhar.
+
 ### Encerrando a viagem
 
 ```go
@@ -266,6 +297,19 @@ mdfe.NovoCancelamento(...)        // só antes de a viagem começar
 mdfe.NovaInclusaoCondutor(...)    // troca de motorista em viagem longa
 ```
 
+Todos são transmitidos um a um — o MDF-e não tem lote de eventos:
+
+```go
+ret, err := cliente.EnviarEvento(ctx, assinado)
+if ret.Registrado() { /* … */ }
+```
+
+!!! note "O encerramento tem código próprio"
+
+    Os eventos do MDF-e são aceitos com `cStat` 135, mas o encerramento
+    responde **132**. `Registrado()` já cobre os dois; se você conferir o código
+    à mão, não esqueça do 132.
+
 ## Os documentos auxiliares
 
 O DACTE e o DAMDFE saem do mesmo pacote que o DANFE, a partir do XML de
@@ -290,13 +334,7 @@ Os detalhes de cada leiaute estão em [Documentos auxiliares](danfe.md).
 | DACTE e DAMDFE em PDF | Completos — veja [Documentos auxiliares](danfe.md) |
 | DACTE OS em PDF | **Não implementado** |
 | Cliente SEFAZ do CT-e e do CT-e OS | Status, autorização e consulta |
-| Cliente SEFAZ do MDF-e | **Não implementado** — veja abaixo |
-
-!!! warning "O MDF-e ainda não tem cliente"
-
-    O pacote `mdfe` monta, valida e assina o manifesto e seus eventos, mas o
-    `sefaz` ainda não tem o cliente que os transmite. Até lá, use o XML assinado
-    com o seu próprio transporte SOAP.
+| Cliente SEFAZ do MDF-e | Status, autorização, consulta, eventos e não encerrados |
 
 !!! warning "Endereços dos serviços"
 

@@ -2,6 +2,8 @@ package mdfe
 
 import (
 	"bytes"
+	"compress/gzip"
+	"encoding/base64"
 	"encoding/xml"
 	"fmt"
 	"strings"
@@ -267,6 +269,28 @@ func MontarMDFeProc(mdfeAssinado []byte, prot *ProtMDFe) ([]byte, error) {
 	b.Write(protXML)
 	b.WriteString(`</mdfeProc>`)
 	return b.Bytes(), nil
+}
+
+// MontarEnvioSincrono prepara a mensagem do serviço de recepção síncrona, que
+// no leiaute 3.00 substituiu o envio em lote.
+//
+// O conteúdo vai comprimido: o serviço recebe o manifesto assinado em gzip
+// codificado em base64. A compressão não altera os bytes assinados, então a
+// assinatura continua conferindo do outro lado.
+func MontarEnvioSincrono(mdfeAssinado []byte) ([]byte, error) {
+	recorte, err := recortar(mdfeAssinado, "MDFe")
+	if err != nil {
+		return nil, err
+	}
+	var comprimido bytes.Buffer
+	w := gzip.NewWriter(&comprimido)
+	if _, err := w.Write(recorte); err != nil {
+		return nil, fmt.Errorf("mdfe: falha ao comprimir: %w", err)
+	}
+	if err := w.Close(); err != nil {
+		return nil, fmt.Errorf("mdfe: falha ao comprimir: %w", err)
+	}
+	return []byte(base64.StdEncoding.EncodeToString(comprimido.Bytes())), nil
 }
 
 // XMLDeclarado antepõe a declaração XML em UTF-8 ao documento.

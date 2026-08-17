@@ -17,6 +17,18 @@ o [versionamento semântico](https://semver.org/lang/pt-BR/).
   informações complementares, cobrança, responsável técnico e protocolo.
 - `sefaz.ClienteCTe.Autorizar` reconhece o modelo pelo elemento raiz e atende
   aos dois pelo mesmo serviço de recepção síncrona.
+- `sefaz.ClienteMDFe`, que faltava: o manifesto era montado, validado e
+  assinado, mas não havia como transmiti-lo. Cobre status do serviço,
+  autorização síncrona, consulta por chave, recepção de evento e a consulta de
+  manifestos não encerrados. O MDF-e é centralizado — todas as UFs vão para a
+  Sefaz Virtual do Rio Grande do Sul.
+- `RetConsSitMDFe.Encerrado` e `RetEventoMDFe.Registrado`, que já levam em conta
+  o código 132: o encerramento é aceito com um `cStat` diferente do 135 dos
+  demais eventos, e conferir só o 135 daria o encerramento como recusado.
+- `RetConsMDFeNaoEnc.Chaves` lista os manifestos em aberto. A rejeição que a
+  SEFAZ devolve na autorização não diz qual manifesto está pendente; esta
+  consulta diz.
+- `mdfe.MontarEnvioSincrono`, a compressão gzip e base64 da recepção do 3.00.
 - DACTE do CT-e e DAMDFE do MDF-e em PDF, no mesmo pacote `danfe` e com a mesma
   paginação automática dos demais: `GerarDACTE`, `DACTE`, `GerarDAMDFE` e
   `DAMDFE`.
