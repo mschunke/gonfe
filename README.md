@@ -215,7 +215,9 @@ próximos passos, nesta ordem:
 - [ ] Demais modais de CT-e e MDF-e com rodagem em produção
 - [ ] Distribuição de DF-e do CT-e e do MDF-e
 
-Contribuições são bem-vindas; veja [CONTRIBUTING.md](CONTRIBUTING.md).
+Contribuições são bem-vindas; veja [CONTRIBUTING.md](CONTRIBUTING.md). O plano
+técnico de cada item pendente — com onde mexer, armadilhas já pagas e como saber
+que terminou — está em [HANDOFF.md](HANDOFF.md).
 
 ## Aviso legal
 

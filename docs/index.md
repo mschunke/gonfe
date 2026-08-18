@@ -46,6 +46,27 @@ go get github.com/mschunke/gonfe
 
     [:octicons-arrow-right-24: Eventos](eventos.md)
 
+- :octicons-package-24: **Transporte**
+
+    CT-e (57), CT-e OS (67) e MDF-e (58), com o modal rodoviário completo,
+    eventos e o encerramento de viagem.
+
+    [:octicons-arrow-right-24: CT-e e MDF-e](transporte.md)
+
+- :octicons-file-badge-24: **Documentos auxiliares**
+
+    DANFE, cupom da NFC-e, DACTE, DACTE OS e DAMDFE em PDF, escritos em Go
+    puro, sem biblioteca gráfica.
+
+    [:octicons-arrow-right-24: Documentos auxiliares](danfe.md)
+
+- :octicons-inbox-24: **Distribuição de DF-e**
+
+    A fila de documentos de interesse do CNPJ, com o cuidado de não cair no
+    bloqueio por consumo indevido.
+
+    [:octicons-arrow-right-24: Distribuição de DF-e](distribuicao.md)
+
 - :octicons-beaker-24: **Homologação**
 
     Roteiro de testes no ambiente da SEFAZ, do primeiro contato ao ciclo
@@ -55,9 +76,10 @@ go get github.com/mschunke/gonfe
 
 </div>
 
-CT-e, MDF-e e a distribuição de DF-e estão no roteiro; a infraestrutura comum —
-chave de acesso, canonicalização, assinatura e cliente SOAP — já é compartilhada
-e não precisará ser reescrita.
+Todo documento que a biblioteca emite pode também ser transmitido, corrigido,
+cancelado e impresso. O que falta está registrado no
+[HANDOFF](https://github.com/mschunke/gonfe/blob/main/HANDOFF.md), com o plano de
+cada item.
 
 ## Por que mais uma biblioteca
 

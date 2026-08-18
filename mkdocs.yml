@@ -67,6 +67,48 @@ nav:
       - Perguntas frequentes: faq.md
   - Contribuindo: contribuindo.md
 
+plugins:
+  - search
+  # O espelho em inglês vive ao lado do português, no mesmo diretório: cada
+  # página tem um par com sufixo .en. O português é o padrão, e uma página
+  # ainda não traduzida cai nele em vez de sumir do site.
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: pt
+          default: true
+          name: Português
+          build: true
+        - locale: en
+          name: English
+          build: true
+          site_description: Go library for issuing Brazilian electronic fiscal documents
+          nav_translations:
+            Início: Home
+            Começando: Getting started
+            Instalação: Installation
+            Primeira nota: Your first invoice
+            Certificado digital: Digital certificate
+            Guias: Guides
+            Emissão de NF-e: Issuing an NF-e
+            Emissão de NFC-e: Issuing an NFC-e
+            Eventos: Events
+            CT-e e MDF-e: CT-e and MDF-e
+            Distribuição de DF-e: DF-e distribution
+            Documentos auxiliares: Auxiliary documents
+            Assinatura digital: Digital signature
+            Serviços da SEFAZ: SEFAZ web services
+            Valores decimais: Decimal values
+            Validação: Validation
+            Testes em homologação: Testing against homologation
+            Referência: Reference
+            Pacotes: Packages
+            Perguntas frequentes: FAQ
+            Contribuindo: Contributing
+
 markdown_extensions:
   - abbr
   - admonition
