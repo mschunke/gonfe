@@ -9,6 +9,7 @@ Biblioteca em Go para emissão de documentos fiscais eletrônicos brasileiros,
 seguindo os padrões da Receita Federal e das Secretarias de Fazenda estaduais.
 
 **Documentação:** <https://mschunke.github.io/gonfe/> ·
+**In English:** [README.en.md](README.en.md) ·
 **Referência da API:** <https://pkg.go.dev/github.com/mschunke/gonfe>
 
 ## O que já funciona

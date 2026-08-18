@@ -5,6 +5,8 @@ trabalho sem precisar reconstruir o contexto. Ele descreve o estado da
 biblioteca, as convenções que o código segue, as armadilhas já pagas e o que
 falta, em ordem de prioridade.
 
+*In English: [HANDOFF.en.md](HANDOFF.en.md).*
+
 Última atualização: 18 de agosto de 2026, sobre a v0.5.0.
 
 ## Estado atual
