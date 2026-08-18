@@ -36,18 +36,33 @@ Lembre que a autenticação TLS é caminho separado: você também precisará de
 
 ## Como cancelo uma nota?
 
-Ainda não é possível pela biblioteca. Eventos — cancelamento, carta de correção,
-manifestação do destinatário e inutilização de numeração — estão no
-[roteiro](https://github.com/mschunke/gonfe#roteiro), e são o próximo passo.
+```go
+canc, _ := evento.NovoCancelamento(evento.DadosCancelamento{
+    Chave: chave, CNPJ: cnpj, UF: uf.RS, Ambiente: nfe.Producao,
+    Protocolo:     prot.InfProt.NProt,
+    Justificativa: "Cancelamento por erro de digitacao no pedido",
+})
+assinado, _ := canc.AssinarCom(cert)
+ret, _ := cliente.EnviarEvento(ctx, assinado)
+```
 
-A infraestrutura de que eles dependem já existe: `xmldsig.Assinar` aceita
-qualquer tag (`"infEvento"`, `"infInut"`), e `Cliente.Chamar` envia mensagens
-arbitrárias a qualquer serviço. Dá para montar o evento à mão enquanto isso.
+O prazo costuma ser de 24 horas a partir da autorização. Veja
+[Eventos](eventos.md), que cobre também carta de correção, manifestação do
+destinatário e inutilização de numeração. O CT-e e o MDF-e têm eventos próprios,
+descritos em [CT-e e MDF-e](transporte.md).
 
 ## E o DANFE em PDF?
 
-Não está implementado, e também está no roteiro. A biblioteca produz o XML e,
-para a NFC-e, o texto do QR Code; a renderização fica por conta de quem imprime.
+```go
+documento, err := danfe.Gerar(proc, danfe.Opcoes{})
+```
+
+O pacote `danfe` gera os cinco documentos auxiliares — DANFE, cupom da NFC-e,
+DACTE, DACTE OS e DAMDFE — em Go puro, sem biblioteca gráfica. Veja
+[Documentos auxiliares](danfe.md).
+
+O QR Code da NFC-e é a única peça que continua vindo de fora: a biblioteca
+produz o texto, e você passa a matriz codificada.
 
 ## Por que `tipos.Decimal` em vez de `float64`?
 
@@ -109,10 +124,12 @@ testes do pacote `sefaz` funcionam.
 
 ## Posso usar em produção hoje?
 
-A biblioteca cobre o ciclo completo de NF-e e NFC-e, tem testes que exercitam da
+A biblioteca cobre o ciclo completo de NF-e, NFC-e, CT-e, CT-e OS e MDF-e —
+emitir, transmitir, corrigir, cancelar e imprimir —, tem testes que exercitam da
 canonicalização à resposta da SEFAZ, e a assinatura é conferida contra a
 especificação do W3C. Dito isso, ela ainda não chegou à 1.0 e não tem anos de
-rodagem em produção acumulados.
+rodagem em produção acumulados. Os pacotes mais novos, como o `cteos`, têm menos
+rodagem que os demais.
 
 O caminho responsável é o de sempre: homologue com o seu cenário tributário
 real, confira os endereços da sua UF e mantenha um plano de contingência. Se

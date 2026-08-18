@@ -18,9 +18,11 @@ linha.
 Nacional e substituição tributária. Diferimento, partilha interestadual,
 exportação e regimes específicos de UF têm menos rodagem.
 
-**Os itens do roteiro.** Eventos, distribuição de DF-e, CT-e, MDF-e e DANFE.
-Antes de começar algo grande, abra uma issue para combinar a abordagem — a
-infraestrutura comum já existe e vale reaproveitar.
+**Os itens pendentes.** O plano técnico de cada um está no
+[HANDOFF](https://github.com/mschunke/gonfe/blob/main/HANDOFF.md), com onde
+mexer, as armadilhas já pagas e como saber que terminou. Antes de começar algo
+grande, abra uma issue para combinar a abordagem — a infraestrutura comum já
+existe e vale reaproveitar.
 
 ## Rodando os testes
 
