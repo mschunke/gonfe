@@ -13,7 +13,9 @@ theme:
   icon:
     repo: fontawesome/brands/github
   features:
-    - navigation.instant
+    # navigation.instant sai de propósito: ele quebra o link contextual do
+    # seletor de idioma, que passaria a mandar todo mundo para a página
+    # inicial do outro idioma em vez da página equivalente.
     - navigation.tracking
     - navigation.sections
     - navigation.top
