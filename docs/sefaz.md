@@ -203,6 +203,23 @@ Quando você fornece o cliente HTTP, a configuração TLS não é montada
 automaticamente — é preciso incluir o certificado no transporte, como acima.
 Para trocar só a configuração TLS mantendo o resto, use `Config.TLS`.
 
+## Os outros documentos
+
+O CT-e e o MDF-e têm endereços e nomes de serviço próprios, então têm clientes
+próprios:
+
+```go
+clienteCTe, _ := sefaz.NovoClienteCTe(sefaz.ConfigCTe{ /* … */ })
+clienteMDFe, _ := sefaz.NovoClienteMDFe(sefaz.ConfigMDFe{ /* … */ })
+```
+
+O do CT-e atende aos modelos 57 e 67, reconhecendo qual é pelo elemento raiz do
+documento assinado. O do MDF-e é centralizado: toda UF é atendida pela Sefaz
+Virtual do Rio Grande do Sul. Veja [CT-e e MDF-e](transporte.md).
+
+Eventos e inutilização estão em [Eventos](eventos.md); a fila de documentos de
+interesse, em [Distribuição de DF-e](distribuicao.md).
+
 ## Operações ainda não cobertas
 
 `Chamar` envia uma mensagem já montada a qualquer serviço e devolve a resposta
@@ -211,5 +228,3 @@ crua, para quem precisa de algo que a biblioteca ainda não implementa:
 ```go
 resposta, err := cliente.Chamar(ctx, sefaz.ServicoStatus, mensagem)
 ```
-
-Eventos, inutilização de numeração e distribuição de DF-e estão no roteiro.
